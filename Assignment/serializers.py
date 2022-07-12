@@ -54,10 +54,10 @@ class CreateTestCaseElementDetailSerializer(serializers.Serializer):
 
 
 class CreateTestCaseElementSerializer(serializers.Serializer):
+    isPrivate = serializers.BooleanField(required=True,)
     order = serializers.IntegerField(required=True,)
-    name = serializers.CharField(required=True, max_length=255)
-    value = serializers.CharField(required=True, max_length=255)
-    type = serializers.IntegerField(required=True,)
+    input = CreateAssignmentSettingSerializer(required=True,)
+    output = CreateAssignmentSettingSerializer(required=True,)
 
 
 class CreateAssignmentSerializer(serializers.Serializer):

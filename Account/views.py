@@ -105,8 +105,10 @@ def getProfile(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
-            match data["type"]:
-                case ProfileContent.Profile:
+            if "type" in data:
+                print(data)
+                if data["type"] == ProfileContent.Profile:
+                    print('thuan1')
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
@@ -130,7 +132,8 @@ def getProfile(request):
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
                         return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_200)
-                case ProfileContent.All:
+                elif data["type"] == ProfileContent.All:
+                    print('thuan2')
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
@@ -163,7 +166,8 @@ def getProfile(request):
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
                         return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_200)
-                case _:
+                else:
+                    print('thuan3')
                     responseData = {
                         'user': {
                             'id': account.id,
@@ -174,7 +178,22 @@ def getProfile(request):
                             'created_at': account.created_at,
                         }
                     }
+                    print(responseData)
                     return JsonResponse(responseData, status=HTTP_200)
+            else:
+                print('thuan3')
+                responseData = {
+                    'user': {
+                        'id': account.id,
+                        'username': account.username,
+                        'email': account.email,
+                        'first_name': account.first_name,
+                        'last_name': account.last_name,
+                        'created_at': account.created_at,
+                    }
+                }
+                print(responseData)
+                return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE_GET_PROFILE, status=HTTP_400)
     else:

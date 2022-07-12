@@ -78,13 +78,12 @@ def getListAssignment(request):
                 assignments = assignments.filter(quality_assurance=True)
 
             if "filterByDifficult" in data:
-                match data["filterByDifficult"]:
-                    case "EASY":
-                        assignments = assignments.filter(difficulty=1)
-                    case "MEDIUM":
-                        assignments = assignments.filter(difficulty=2)
-                    case "HARD":
-                        assignments = assignments.filter(difficulty=3)
+                if data["filterByDifficult"] == Difficulty.Easy:
+                    assignments = assignments.filter(difficulty=1)
+                if data["filterByDifficult"] == Difficulty.Mid:
+                    assignments = assignments.filter(difficulty=2)
+                if data["filterByDifficult"] == Difficulty.High:
+                    assignments = assignments.filter(difficulty=3)
             if "searchBy" in data:
                 keyword = data["searchBy"]
                 assignments = assignments.filter(

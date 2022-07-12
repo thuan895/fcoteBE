@@ -19,7 +19,8 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 class GetProfiledSerializer(serializers.Serializer):
-    type = serializers.CharField(max_length=255)
+    type = serializers.CharField(required=False, max_length=255)
+
 
 class GetImageSerializer(serializers.Serializer):
     path = serializers.CharField(required=True, max_length=255)
