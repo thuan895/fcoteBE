@@ -1,0 +1,7 @@
+
+from rest_framework import status
+
+HTTP_200 = status.HTTP_200_OK
+HTTP_400 = status.HTTP_400_BAD_REQUEST
+HTTP_401 = status.HTTP_401_UNAUTHORIZED
+HTTP_500 = status.HTTP_500_INTERNAL_SERVER_ERROR

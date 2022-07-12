@@ -1,0 +1,264 @@
+
+from django.http import JsonResponse
+from Assignment.serializers import *
+from utils.api.api import paginate_data, validate_account
+from utils.api.http_status import *
+from utils.response.assignment import *
+from utils.response.common import *
+from .models import *
+from rest_framework.decorators import api_view
+from django.db.models import Q
+
+
+@api_view(['GET'])
+def getAssignmentTag(request):
+    account = validate_account(request)
+    if (account == None):
+        return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+    if (account.is_active == False):
+        return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+    try:
+        assignmentTags = AssignmentTag.objects.filter(
+            is_active=True).order_by("-id")
+        responseData = {}
+        listData = []
+        for tag in assignmentTags:
+            tagData = {"id": tag.id, "title": tag.title}
+            listData.append(tagData)
+        responseData["assignmentTags"] = listData
+        return JsonResponse(responseData, status=HTTP_200)
+    except Exception as e:
+        return JsonResponse(FAILURE_GET_ASSIGNMENT_TAGS, status=HTTP_400)
+
+
+@api_view(['GET'])
+def getLanguage(request):
+    account = validate_account(request)
+    if (account == None):
+        return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+    if (account.is_active == False):
+        return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+    try:
+        languages = Language.objects.filter(is_active=True).order_by("-id")
+        responseData = {}
+        listData = []
+        for language in languages:
+            languageData = {"id": language.id, "title": language.title}
+            listData.append(languageData)
+        responseData["languages"] = listData
+        return JsonResponse(responseData, status=HTTP_200)
+    except Exception as e:
+        return JsonResponse(FAILURE_GET_LANGUAGES, status=HTTP_400)
+
+
+@api_view(['GET'])
+def getListAssignment(request):
+    requestData = ListAssignmentSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            assignments = Assignment.objects.filter(is_active=True)
+            if "filterByCreatedByUserID" in data:
+                if data["filterByCreatedByUserID"] == str(account.id):
+                    assignments = assignments.filter(created_by=account)
+                else:
+                    author = Account.objects.filter(
+                        id=data["filterByCreatedByUserID"])
+                    if author.exists():
+                        assignments = assignments.filter(
+                            created_by=author[0], quality_assurance=True)
+                    else:
+                        return JsonResponse(NOT_FOUND_USER_FILTER, status=HTTP_400)
+            else:
+                assignments = assignments.filter(quality_assurance=True)
+
+            if "filterByDifficult" in data:
+                match data["filterByDifficult"]:
+                    case "EASY":
+                        assignments = assignments.filter(difficulty=1)
+                    case "MEDIUM":
+                        assignments = assignments.filter(difficulty=2)
+                    case "HARD":
+                        assignments = assignments.filter(difficulty=3)
+            if "searchBy" in data:
+                keyword = data["searchBy"]
+                assignments = assignments.filter(
+                    Q(title__icontains=keyword) | Q(description__icontains=keyword))
+            if ("pageSize" in data) and ("pageNumber" in data):
+                assignments = paginate_data(
+                    assignments, AssignmentSerializer, data["pageSize"], data["pageNumber"])
+            responseData = {}
+            listData = []
+            print(assignments)
+            for assignment in assignments:
+                if ("pageSize" in data) and ("pageNumber" in data):
+                    assignmentData = {
+                        "id": assignment["id"],
+                        "title": assignment["title"],
+                        "image": assignment["image"],
+                        "difficulty": assignment["difficulty"],
+                        "score": assignment["score"],
+                        "assignment_tag": assignment["assignment_tag"],
+                        "total_participant": assignment["total_participant"],
+                        "created_by": Account.objects.get(id=assignment["created_by"]).username,
+                        "created_at": assignment["created_at"]
+                    }
+                else:
+                    assignmentData = {
+                        "id": assignment.id,
+                        "title": assignment.title,
+                        "image": assignment.image,
+                        "difficulty": assignment.difficulty,
+                        "score": assignment.score,
+                        "assignment_tag": assignment.assignment_tag.id,
+                        "total_participant": assignment.total_participant,
+                        "created_by": assignment.created_by.username,
+                        "created_at": assignment.date()
+                    }
+                listData.append(assignmentData)
+            responseData["assignments"] = listData
+            responseData["currentSize"] = len(assignments)
+            return JsonResponse(responseData, status=HTTP_200)
+        except Exception as e:
+            print(e)
+            return JsonResponse(FAILURE_GET_ASSIGNMENT, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['GET'])
+def getAssignmentDetail(request):
+    requestData = AssignmentDetailSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            assignment = Assignment.objects.filter(
+                id=data["id"], is_active=True)
+            if assignment.exists():
+                responseData = {}
+                assignmentData = {
+                    "id": assignment[0].id,
+                    "title": assignment[0].title,
+                    "description": assignment[0].description,
+                    "sample": assignment[0].sample,
+                    "image": assignment[0].image,
+                    "difficulty": assignment[0].difficulty,
+                    "total_test_case": assignment[0].total_test_case,
+                    "score": assignment[0].score,
+                    "assignment_tag": assignment[0].assignment_tag.id,
+                    "character_limit": assignment[0].character_limit,
+                    "total_participant": assignment[0].total_participant,
+                    "created_by": assignment[0].created_by.username,
+                }
+                responseData["AssignmentDetail"] = assignmentData
+                assignmentLanguages = AssignmentLanguage.objects.filter(
+                    assignment=assignment[0])
+                assignmentLanguagesResponse = []
+                for asmlg in assignmentLanguages:
+                    asmlgResponse = {"id": asmlg.id,
+                                     "language": asmlg.language.title,
+                                     "time_limit": asmlg.time_limit}
+                    assignmentLanguagesResponse.append(asmlgResponse)
+                responseData["AssignmentLanguages"] = assignmentLanguagesResponse
+                parammeters = Parammeter.objects.filter(
+                    assignment=assignment[0])
+                parammetersResponse = []
+                for prm in parammeters:
+                    prmResponse = {"id": prm.id,
+                                   "assignment": prm.assignment.id,
+                                   "order": prm.order,
+                                   "type": prm.type,
+                                   "name": prm.name,
+                                   "data_type": prm.data_type,
+                                   "description": prm.description}
+                    parammetersResponse.append(prmResponse)
+                print(parammetersResponse)
+                responseData["Parammeters"] = parammetersResponse
+                testCases = TestCase.objects.filter(assignment=assignment[0])
+                testCasesResponse = []
+                for testCase in testCases:
+                    if testCase.is_private and testCase.assignment.created_by != account:
+                        testCase = {"id": testCase.id,
+                                    "assignment": testCase.assignment.id,
+                                    "order": testCase.order,
+                                    "is_private": testCase.is_private}
+                        testCasesResponse.append(testCase)
+                    else:
+                        testCaseElements = TestCaseElement.objects.filter(
+                            test_case=testCase)
+                        testCaseElmList = []
+                        for elm in testCaseElements:
+                            elmData = {"id": elm.id,
+                                       "test_case": elm.test_case.id,
+                                       "order": elm.order,
+                                       "type": elm.type,
+                                       "data_type": elm.data_type,
+                                       "value": elm.value}
+                            testCaseElmList.append(elmData)
+                        testCase = {"id": testCase.id,
+                                    "assignment": testCase.assignment.id,
+                                    "order": testCase.order,
+                                    "element": testCaseElmList,
+                                    "is_private": testCase.is_private}
+                        testCasesResponse.append(testCase)
+                responseData["TestCases"] = testCasesResponse
+                return JsonResponse(responseData, status=HTTP_200)
+            else:
+                return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['POST', 'PUT'])
+def AddUpdateAssignment(request):
+    requestData = CreateAssignmentSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            if (request.method == 'POST'):
+                print("POST")
+                print(data)
+            if (request.method == 'PUT'):
+                print("PUT")
+            return JsonResponse(SUCCESS, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['GET'])
+def view(request):
+    requestData = ListAssignmentSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            ######### Handle #########
+
+            return JsonResponse(SUCCESS, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
