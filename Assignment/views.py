@@ -1,4 +1,5 @@
 
+import json
 from django.http import JsonResponse
 from Assignment.serializers import *
 from utils.api.api import paginate_data, validate_account
@@ -93,7 +94,6 @@ def getListAssignment(request):
                     assignments, AssignmentSerializer, data["pageSize"], data["pageNumber"])
             responseData = {}
             listData = []
-            print(assignments)
             for assignment in assignments:
                 if ("pageSize" in data) and ("pageNumber" in data):
                     assignmentData = {
@@ -124,7 +124,6 @@ def getListAssignment(request):
             responseData["currentSize"] = len(assignments)
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE_GET_ASSIGNMENT, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -150,11 +149,11 @@ def getAssignmentDetail(request):
                     "title": assignment[0].title,
                     "description": assignment[0].description,
                     "sample": assignment[0].sample,
-                    "image": assignment[0].image,
+                    # "image": assignment[0].image,
                     "difficulty": assignment[0].difficulty,
                     "total_test_case": assignment[0].total_test_case,
                     "score": assignment[0].score,
-                    "assignment_tag": assignment[0].assignment_tag.id,
+                    # "assignment_tag": assignment[0].assignment_tag.id,
                     "character_limit": assignment[0].character_limit,
                     "total_participant": assignment[0].total_participant,
                     "created_by": assignment[0].created_by.username,
@@ -181,7 +180,6 @@ def getAssignmentDetail(request):
                                    "data_type": prm.data_type,
                                    "description": prm.description}
                     parammetersResponse.append(prmResponse)
-                print(parammetersResponse)
                 responseData["Parammeters"] = parammetersResponse
                 testCases = TestCase.objects.filter(assignment=assignment[0])
                 testCasesResponse = []
@@ -232,15 +230,106 @@ def AddUpdateAssignment(request):
         try:
             data = request.data
             if (request.method == 'POST'):
-                print("POST")
-                print(data)
+                ##########################
+                obj = Assignment()
+                obj.title = data["setting"]["name"]
+                obj.description = data["setting"]["description"]
+                obj.sample = data["authorSolution"]
+                difficulty = data["setting"]["difficulty"]
+                obj.difficulty = difficulty
+                obj.total_test_case = len(data["testCase"])
+                if (difficulty == Difficulty.Easy):
+                    obj.score = 50
+                elif (difficulty == Difficulty.Mid):
+                    obj.score = 70
+                elif (difficulty == Difficulty.High):
+                    obj.score = 100
+                else:
+                    obj.score = 0
+                obj.created_by = account
+                obj.save()
+                assignment = obj
+                ##########################
+                for lgg in data["language"]:
+                    language = Language.objects.filter(title=lgg["language"])
+                    if language.exists():
+                        obj = AssignmentLanguage()
+                        obj.assignment = assignment
+                        obj.language = language[0]
+                        obj.time_limit = lgg["time_limit"]
+                obj.save()
+                ##########################
+                for input in data["inputOutput"]["input"]:
+                    obj = Parammeter()
+                    obj.assignment = assignment
+                    obj.order = input["order"]
+                    obj.type = InOutType.input
+                    obj.name = input["name"]
+                    obj.data_type = input["type"]
+                    obj.description = input["description"]
+                    obj.save()
+
+                output = data["inputOutput"]["output"]
+                obj = Parammeter()
+                obj.assignment = assignment
+                obj.order = output["order"]
+                obj.type = InOutType.output
+                obj.name = output["name"]
+                obj.data_type = output["type"]
+                obj.description = output["description"]
+                obj.save()
+                ##########################
+                for testCase in data["testCase"]:
+                    obj = TestCase()
+                    obj.assignment = assignment
+                    obj.order = testCase["order"]
+                    obj.is_private = testCase["isPrivate"]
+                    obj.save()
+                    for elmIn in testCase["input"]:
+                        objTCIn = TestCaseElement()
+                        objTCIn.test_case = obj
+                        objTCIn.type = InOutType.input
+                        objTCIn.order = elmIn["order"]
+                        objTCIn.data_type = elmIn["type"]
+                        objTCIn.value = elmIn["value"]
+                        objTCIn.save()
+                    objTCOut = TestCaseElement()
+                    objTCOut.test_case = obj
+                    objTCOut.type = InOutType.output
+                    objTCOut.order = elmIn["order"]
+                    objTCOut.data_type = elmIn["type"]
+                    objTCOut.value = elmIn["value"]
+                    objTCOut.save()
+                ##########################
             if (request.method == 'PUT'):
                 print("PUT")
+
             return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['GET'])
+def getDataType(request):
+    account = validate_account(request)
+    if (account == None):
+        return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+    if (account.is_active == False):
+        return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+    try:
+        data = DataType
+        responseData = {}
+        list = []
+        for i in data:
+            type = {'name': i.name, "value": i}
+            list.append(type)
+        responseData["dataType"] = list
+        return JsonResponse(responseData, status=HTTP_200)
+    except Exception as e:
+        return JsonResponse(FAILURE, status=HTTP_400)
 
 
 @api_view(['GET'])

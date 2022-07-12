@@ -1,4 +1,5 @@
 import datetime
+import profile
 import pyrebase
 from requests import HTTPError
 from rest_framework.decorators import api_view
@@ -35,6 +36,9 @@ def postsignUp(request):
             account = Account.objects.create(
                 email=data["email"], token=token, username=data["username"], first_name=data["firstName"], last_name=data["lastName"])
             account.save()
+            profile = Profile()
+            profile.account = account
+            profile.save()
             return JsonResponse(SUCCESS, status=HTTP_200)
         except HTTPError as e:
             if (e.strerror.find('EMAIL_EXISTS') != -1):
@@ -68,13 +72,22 @@ def postsignIn(request):
             account.token = session_id
             account.save()
             request.session['uid'] = str(session_id)
+
+            profile = Profile.objects.filter(account=account)
+            dataUser = {
+                'userId': account.id,
+                'fullName': account.fullname(),
+                'avatar': profile[0].avatar
+            }
             responseData = {
                 'messageEn': 'Login Success',
                 'messageVi': 'Đăng nhập thành công',
                 'token': session_id,
+                'user': dataUser
             }
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE_SIGN_IN, status=HTTP_401)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -239,5 +252,49 @@ def getImage(request):
             return HttpResponse(image, content_type="image/png")
         else:
             return JsonResponse(FAILURE_GET_IMAGE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['PUT'])
+def updateProfile(request):
+    requestData = UpdateProfileSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data["user"]
+            profile = Profile.objects.get(account=account)
+            if "avatar" in data:
+                profile.avatar = data["avatar"]
+            if "phone" in data:
+                profile.phone = data["phone"]
+            if "birthday" in data:
+                profile.birthday = data["birthday"]
+            if "gender" in data:
+                profile.gender = data["gender"]
+            if "organization" in data:
+                organization = Organization.objects.filter(
+                    title=data["organization"])
+                if organization.exists():
+                    profile.organization = organization[0]
+            if "city" in data:
+                profile.city = data["city"]
+            if "country" in data:
+                profile.country = data["country"]
+            if "first_name" in data:
+                account.first_name = data["first_name"]
+            if "last_name" in data:
+                account.last_name = data["last_name"]
+            if "email" in data:
+                account.email = data["email"]
+            profile.save()
+            account.save()
+            return JsonResponse(SUCCESS, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

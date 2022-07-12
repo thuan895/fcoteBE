@@ -7,4 +7,5 @@ urlpatterns = [
     path('get-profile', getProfile),
     path('put-avatar', putAvatar),
     path('get-image', getImage),
+    path('update-profile', updateProfile),
 ]

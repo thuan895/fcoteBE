@@ -24,3 +24,15 @@ class GetProfiledSerializer(serializers.Serializer):
 
 class GetImageSerializer(serializers.Serializer):
     path = serializers.CharField(required=True, max_length=255)
+
+class UpdateProfileSerializer(serializers.Serializer):
+    avatar = serializers.CharField(required=False, max_length=255)
+    phone = serializers.CharField(required=False, max_length=255)
+    birthday = serializers.CharField(required=False, max_length=255)
+    gender = serializers.ImageField(required=False)
+    organization = serializers.ImageField(required=False)
+    city = serializers.CharField(required=False, max_length=255)
+    country = serializers.CharField(required=False, max_length=255)
+    first_name = serializers.CharField(required=False, max_length=255)
+    last_name = serializers.CharField(required=False, max_length=255)
+    email = serializers.CharField(required=False, max_length=255)

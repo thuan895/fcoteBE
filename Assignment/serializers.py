@@ -35,8 +35,9 @@ class CreateAssignmentLanguageSerializer(serializers.Serializer):
 
 
 class CreateAssignmentParammeterDetailSerializer(serializers.Serializer):
+    order = serializers.IntegerField(required=True,)
     name = serializers.CharField(required=True, max_length=255)
-    type = serializers.CharField(required=True, max_length=255)
+    type = serializers.IntegerField(required=True,)
     description = serializers.CharField(required=True, max_length=255)
 
 
@@ -48,7 +49,7 @@ class CreateAssignmentParammeterSerializer(serializers.Serializer):
 
 class CreateTestCaseElementDetailSerializer(serializers.Serializer):
     order = serializers.IntegerField(required=True,)
-    name = serializers.CharField(required=True, max_length=255)
+    name = serializers.CharField(required=False, max_length=255)
     value = serializers.CharField(required=True, max_length=255)
     type = serializers.IntegerField(required=True,)
 
@@ -56,8 +57,8 @@ class CreateTestCaseElementDetailSerializer(serializers.Serializer):
 class CreateTestCaseElementSerializer(serializers.Serializer):
     isPrivate = serializers.BooleanField(required=True,)
     order = serializers.IntegerField(required=True,)
-    input = CreateAssignmentSettingSerializer(required=True,)
-    output = CreateAssignmentSettingSerializer(required=True,)
+    input = CreateTestCaseElementDetailSerializer(required=True, many=True)
+    output = CreateTestCaseElementDetailSerializer(required=True,)
 
 
 class CreateAssignmentSerializer(serializers.Serializer):
@@ -65,3 +66,4 @@ class CreateAssignmentSerializer(serializers.Serializer):
     language = CreateAssignmentLanguageSerializer(required=False, many=True)
     inputOutput = CreateAssignmentParammeterSerializer(required=True,)
     authorSolution = serializers.CharField(required=False, max_length=10000)
+    testCase = CreateTestCaseElementSerializer(required=True, many=True)
