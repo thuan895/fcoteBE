@@ -27,14 +27,14 @@ def postsignUp(request):
     requestData = SignUpSerializer(data=request.data)
     if requestData.is_valid():
         data = request.data
-        if Account.objects.filter(username=data["username"]).exists():
+        if Account.objects.filter(username=data["userName"]).exists():
             return JsonResponse(EXIST_USERNAME, status=HTTP_400)
         try:
             user = authe.create_user_with_email_and_password(
                 data["email"], data["password"])
             token = user['idToken']
             account = Account.objects.create(
-                email=data["email"], token=token, username=data["username"], first_name=data["firstName"], last_name=data["lastName"])
+                email=data["email"], token=token, username=data["userName"], first_name=data["firstName"], last_name=data["lastName"])
             account.save()
             profile = Profile()
             profile.account = account
