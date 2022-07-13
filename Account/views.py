@@ -107,7 +107,7 @@ def postReset(request):
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getProfile(request):
     requestData = GetProfiledSerializer(data=request.data)
     if requestData.is_valid():
@@ -242,7 +242,7 @@ def putAvatar(request):
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getImage(request):
     requestData = GetImageSerializer(data=request.data)
     if requestData.is_valid():

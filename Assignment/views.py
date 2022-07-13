@@ -52,7 +52,7 @@ def getLanguage(request):
         return JsonResponse(FAILURE_GET_LANGUAGES, status=HTTP_400)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getListAssignment(request):
     requestData = ListAssignmentSerializer(data=request.data)
     if requestData.is_valid():
@@ -129,7 +129,7 @@ def getListAssignment(request):
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getAssignmentDetail(request):
     requestData = AssignmentDetailSerializer(data=request.data)
     if requestData.is_valid():
@@ -218,8 +218,8 @@ def getAssignmentDetail(request):
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
 
 
-@api_view(['POST', 'PUT'])
-def AddUpdateAssignment(request):
+@api_view(['POST'])
+def addAssignment(request):
     requestData = CreateAssignmentSerializer(data=request.data)
     if requestData.is_valid():
         account = validate_account(request)
@@ -301,9 +301,6 @@ def AddUpdateAssignment(request):
                     objTCOut.value = elmIn["value"]
                     objTCOut.save()
                 ##########################
-            if (request.method == 'PUT'):
-                print("PUT")
-
             return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
             print(e)
@@ -320,20 +317,142 @@ def getDataType(request):
     if (account.is_active == False):
         return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
     try:
-        data = DataType
         responseData = {}
-        list = []
-        for i in data:
-            type = {'name': i.name, "value": i}
-            list.append(type)
-        responseData["dataType"] = list
+        responseData["Data"] = [
+            {
+                "Id": 1,
+                "Name": "Integer",
+                "DefaultValue": "0",
+                "Description": "Integer"
+            },
+            {
+                "Id": 2,
+                "Name": "Long",
+                "DefaultValue": "0",
+                "Description": "Long"
+            },
+            {
+                "Id": 3,
+                "Name": "Float",
+                "DefaultValue": "0",
+                "Description": "Float"
+            },
+            {
+                "Id": 4,
+                "Name": "Char",
+                "DefaultValue": "",
+                "Description": "Char"
+            },
+            {
+                "Id": 5,
+                "Name": "String",
+                "DefaultValue": "\"\"",
+                "Description": "String"
+            },
+            {
+                "Id": 6,
+                "Name": "Boolean",
+                "DefaultValue": "false",
+                "Description": "Boolean"
+            },
+            {
+                "Id": 7,
+                "Name": "ArrayOfIntegers",
+                "DefaultValue": "[1,2,3]",
+                "Description": "Array Of Integers"
+            },
+            {
+                "Id": 8,
+                "Name": "ArrayOfLongs",
+                "DefaultValue": "[1,2,3]",
+                "Description": "Array Of Longs"
+            },
+            {
+                "Id": 9,
+                "Name": "ArrayOfFloats",
+                "DefaultValue": "[1.0,2.0,3.0]",
+                "Description": "Array Of Floats"
+            },
+            {
+                "Id": 10,
+                "Name": "ArrayOfChars",
+                "DefaultValue": "[\"a\",\"b\",\"c\"]",
+                "Description": "Array Of Chars"
+            },
+            {
+                "Id": 11,
+                "Name": "ArrayOfStrings",
+                "DefaultValue": "[\"ab\",\"bc\",\"cd\"]",
+                "Description": "Array Of Strings"
+            },
+            {
+                "Id": 12,
+                "Name": "ArrayOfBooleans",
+                "DefaultValue": "[false,true]",
+                "Description": "Array Of Booleans"
+            },
+            {
+                "Id": 13,
+                "Name": "MatrixOfIntegers",
+                "DefaultValue": "[[1,2],[3,4]]",
+                "Description": "Matrix Of Integers"
+            },
+            {
+                "Id": 14,
+                "Name": "MatrixOfLongs",
+                "DefaultValue": "[[1,2],[3,4]]",
+                "Description": "Matrix Of Longs"
+            },
+            {
+                "Id": 15,
+                "Name": "MatrixOfFloats",
+                "DefaultValue": "[[1.0,2.0],[3.0,4.0]]",
+                "Description": "Matrix Of Floats"
+            },
+            {
+                "Id": 16,
+                "Name": "MatrixOfChars",
+                "DefaultValue": "[[\"a\",\"b\"],[\"c\",\"d\"]]",
+                "Description": "Matrix Of Chars"
+            },
+            {
+                "Id": 17,
+                "Name": "MatrixOfStrings",
+                "DefaultValue": "[[\"aa\",\"bb\"],[\"cc\",\"dd\"]]",
+                "Description": "Matrix Of Strings"
+            },
+            {
+                "Id": 18,
+                "Name": "MatrixOfBooleans",
+                "DefaultValue": "[[false,true],[true,false]]",
+                "Description": "Matrix Of Booleans"
+            },
+            {
+                "Id": 19,
+                "Name": "Double",
+                "DefaultValue": "0.0",
+                "Description": "Double"
+            },
+            {
+                "Id": 20,
+                "Name": "ArrayOfDoubles",
+                "DefaultValue": "[1.0,2.0,3.0]",
+                "Description": "Array of Doubles"
+            },
+            {
+                "Id": 21,
+                "Name": "MatrixOfDoubles",
+                "DefaultValue": "[[1.0,2.0],[3.0,4.0]]",
+                "Description": "Matrix of Doubles"
+            }
+        ]
         return JsonResponse(responseData, status=HTTP_200)
     except Exception as e:
         return JsonResponse(FAILURE, status=HTTP_400)
 
 
-@api_view(['GET'])
-def view(request):
+@api_view(['POST'])
+def sampleView(request):
     requestData = ListAssignmentSerializer(data=request.data)
     if requestData.is_valid():
         account = validate_account(request)
