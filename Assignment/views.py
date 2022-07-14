@@ -102,7 +102,7 @@ def getListAssignment(request):
                         "image": assignment["image"],
                         "difficulty": assignment["difficulty"],
                         "score": assignment["score"],
-                        "assignment_tag": assignment["assignment_tag"],
+                        # "assignment_tag": assignment["assignment_tag"],
                         "total_participant": assignment["total_participant"],
                         "created_by": Account.objects.get(id=assignment["created_by"]).username,
                         "created_at": assignment["created_at"]
@@ -114,7 +114,7 @@ def getListAssignment(request):
                         "image": assignment.image,
                         "difficulty": assignment.difficulty,
                         "score": assignment.score,
-                        "assignment_tag": assignment.assignment_tag.id,
+                        # "assignment_tag": assignment.assignment_tag.id,
                         "total_participant": assignment.total_participant,
                         "created_by": assignment.created_by.username,
                         "created_at": assignment.date()

@@ -8,4 +8,5 @@ urlpatterns = [
     path('put-avatar', putAvatar),
     path('get-image', getImage),
     path('update-profile', updateProfile),
+    path('get-ranking', getRanking)
 ]
