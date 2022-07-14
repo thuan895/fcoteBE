@@ -23,7 +23,7 @@ class Submit(models.Model):
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return self.account.username+"-"+self.challenge.title+"-"+self.assignment.title
 
 
 class SubmitResult(models.Model):
@@ -35,3 +35,6 @@ class SubmitResult(models.Model):
     score = IntegerField(blank=True, null=True, default=0)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.submit)

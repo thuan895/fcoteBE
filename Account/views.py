@@ -1,5 +1,4 @@
 import datetime
-import profile
 import pyrebase
 from requests import HTTPError
 from rest_framework.decorators import api_view
@@ -8,8 +7,8 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse
 
 from utils.constants.firebase import FirebaseConfig, downloadImage, uploadFile
-from utils.constants.models import ProfileContent
-from utils.api.api import validate_account
+from utils.constants.models import ProfileContent, RankingType
+from utils.api.api import paginate_data, validate_account
 from utils.response.account import *
 from utils.response.common import *
 from utils.api.http_status import *
@@ -337,6 +336,7 @@ def updateProfile(request):
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
 
+
 @api_view(['POST'])
 def getRanking(request):
     requestData = GetRankingSerializer(data=request.data)
@@ -349,9 +349,113 @@ def getRanking(request):
         try:
             data = request.data
             ######### Handle #########
+            if data["type"] == RankingType.User:
+                profiles = Profile.objects.all().order_by("-total_score")
+                currentUserProfile = Profile.objects.get(account=account)
+                currentPosition = list(profiles).index(currentUserProfile) + 1
+                top3 = []
+                for i in range(0, 3):
+                    item = {"id": profiles[i].account.id,
+                            "order": i+1,
+                            "username": profiles[i].account.username,
+                            "fullname": profiles[i].account.fullname(),
+                            "avatar": profiles[i].avatar,
+                            "organization": profiles[i].organization.title,
+                            "total_score": profiles[i].total_score,
+                            }
+                    top3.append(item)
+                rankingList = []
+                if ("pageSize" in data) and ("pageNumber" in data) and len(profiles) > 3:
+                    profiles = profiles[3:]
+                    profiles = paginate_data(
+                        profiles, None, data["pageSize"], data["pageNumber"])
+                print(profiles)
+                for i in range(0, len(profiles)):
+                    item = {"id": profiles[i].account.id,
+                            "order": i+4,
+                            "username": profiles[i].account.username,
+                            "fullname": profiles[i].account.fullname(),
+                            "avatar": profiles[i].avatar,
+                            "organization": profiles[i].organization.title,
+                            "total_score": profiles[i].total_score,
+                            }
+                    rankingList.append(item)
 
-            return JsonResponse(SUCCESS, status=HTTP_200)
+                current = {"id": currentUserProfile.account.id,
+                           "order": currentPosition,
+                           "username": currentUserProfile.account.username,
+                           "fullname": currentUserProfile.account.fullname(),
+                           "avatar": currentUserProfile.avatar,
+                           "organization": currentUserProfile.organization.title,
+                           "total_score": currentUserProfile.total_score,
+                           }
+
+                dataResponse = {
+                    "top3": top3,
+                    "ranking_list": rankingList,
+                    "current_user": current,
+                    "currentSize": len(profiles)
+                }
+            # if data["type"] == RankingType.OrganizationRanking:
+            #     organizations = Organization.objects.all()
+            #     currentUserProfile = Profile.objects.get(account=account)
+            #     currentTotal=0
+            #     organizationRaking = []
+            #     for org in organizations:
+            #         total = 0
+            #         profiles = Profile.objects.filter(organization=org)
+            #         for prf in profiles:
+            #             total = total + prf.total_score
+            #         organizationRaking.append(total)
+            #         if org == currentUserProfile.organization:
+            #             currentTotal = total
+            #     organizationRaking.sort(reverse=True)
+            #     currentTotal = list(organizationRaking).index(currentTotal) + 1
+            #     top3 = []
+            #     for i in range(0, 3):
+            #         item = {"id": organizationRaking[i].account.id,
+            #                 "order": i+1,
+            #                 "username": organizationRaking[i].account.username,
+            #                 "fullname": organizationRaking[i].account.fullname(),
+            #                 "avatar": organizationRaking[i].avatar,
+            #                 "organization": organizationRaking[i].organization.title,
+            #                 "total_score": organizationRaking[i].total_score,
+            #                 }
+            #         top3.append(item)
+            #     rankingList = []
+            #     if ("pageSize" in data) and ("pageNumber" in data) and len(profiles) > 3:
+            #         organizationRaking = organizationRaking[3:]
+            #         organizationRaking = paginate_data(
+            #             organizationRaking, None, data["pageSize"], data["pageNumber"])
+            #     for i in range(0, len(organizationRaking)):
+            #         item = {"id": organizationRaking[i].account.id,
+            #                 "order": i+4,
+            #                 "username": organizationRaking[i].account.username,
+            #                 "fullname": organizationRaking[i].account.fullname(),
+            #                 "avatar": organizationRaking[i].avatar,
+            #                 "organization": organizationRaking[i].organization.title,
+            #                 "total_score": organizationRaking[i].total_score,
+            #                 }
+            #         rankingList.append(item)
+
+            #     current = {"id": currentUserProfile.id,
+            #                "order": currentPosition,
+            #                "username": currentUserProfile.account.username,
+            #                "fullname": currentUserProfile.account.fullname(),
+            #                "avatar": currentUserProfile.avatar,
+            #                "organization": currentUserProfile.organization.title,
+            #                "total_score": currentUserProfile.total_score,
+            #                }
+
+            #     dataResponse = {
+            #         "top3": top3,
+            #         "ranking_list": rankingList,
+            #         "current_user": current,
+            #         "currentSize": len(profiles)
+            #     }
+            return JsonResponse(dataResponse, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

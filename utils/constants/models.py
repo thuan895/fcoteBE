@@ -47,3 +47,8 @@ class ProfileContent():
     Profile = 2
     All = 3
     Custom = 4
+
+
+class RankingType():
+    User = 1
+    OrganizationRanking = 2
