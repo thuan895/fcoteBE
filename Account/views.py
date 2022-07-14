@@ -118,13 +118,18 @@ def getProfile(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
+            if "username" in data and account.username != data["username"]:
+                account = Account.objects.filter(username=data["username"])
+                account = account[0]
             if "type" in data:
-                print(data)
                 if data["type"] == ProfileContent.Profile:
-                    print('thuan1')
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
+                        if profile.organization == None:
+                            organization = profile.organization
+                        else:
+                            organization = profile.organization.title
                         responseData = {
                             'user': {
                                 'id': account.id,
@@ -137,19 +142,22 @@ def getProfile(request):
                                 'phone': profile.phone,
                                 'birthday': profile.birthday,
                                 'gender': profile.gender,
-                                'organization': profile.organization.title,
+                                'organization': organization,
                                 'city': profile.city,
                                 'country': profile.country,
                             }
                         }
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
-                        return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_200)
+                        return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_400)
                 elif data["type"] == ProfileContent.All:
-                    print('thuan2')
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
+                        if profile.organization == None:
+                            organization = profile.organization
+                        else:
+                            organization = profile.organization.title
                         responseData = {
                             'user': {
                                 'id': account.id,
@@ -162,7 +170,7 @@ def getProfile(request):
                                 'phone': profile.phone,
                                 'birthday': profile.birthday,
                                 'gender': profile.gender,
-                                'organization': profile.organization.title,
+                                'organization': organization,
                                 'city': profile.city,
                                 'country': profile.country,
                                 'total_assigment': profile.total_assigment,
@@ -178,9 +186,41 @@ def getProfile(request):
                         }
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
-                        return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_200)
+                        return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_400)
+                elif data["type"] == ProfileContent.Custom:
+                    profile = Profile.objects.filter(account=account)
+                    if profile.exists():
+                        profile = profile[0]
+                        if profile.organization == None:
+                            organization = profile.organization
+                        else:
+                            organization = profile.organization.title
+                        responseData = {
+                            'user': {
+                                'userId': account.id,
+                                'avatar': profile.avatar,
+                                'firstName': account.first_name,
+                                'lastName': account.last_name,
+                                'username': account.username,
+                                'organizationTitle': organization,
+                                'city': profile.city,
+                                'country': profile.country,
+                                'email': account.email,
+                                'phone': profile.phone,
+                                'gender': profile.gender,
+                                'createdAt': account.created_at,
+                            },
+                            'assignmentCompleted': {
+                                'numberAssignmentCompletedFollowHard': profile.assignment_easy,
+                                'numberAssignmentCompletedFollowMedium': profile.assignment_medium,
+                                'numberAssignmentCompletedFollowEasy': profile.assignment_hard,
+                                'totalScore': profile.total_score,
+                            }
+                        }
+                        return JsonResponse(responseData, status=HTTP_200)
+                    else:
+                        return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_400)
                 else:
-                    print('thuan3')
                     responseData = {
                         'user': {
                             'id': account.id,
@@ -191,10 +231,8 @@ def getProfile(request):
                             'created_at': account.created_at,
                         }
                     }
-                    print(responseData)
                     return JsonResponse(responseData, status=HTTP_200)
             else:
-                print('thuan3')
                 responseData = {
                     'user': {
                         'id': account.id,
@@ -205,9 +243,9 @@ def getProfile(request):
                         'created_at': account.created_at,
                     }
                 }
-                print(responseData)
                 return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE_GET_PROFILE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

@@ -20,10 +20,12 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class GetProfiledSerializer(serializers.Serializer):
     type = serializers.CharField(required=False, max_length=255)
+    username = serializers.CharField(required=False, max_length=255)
 
 
 class GetImageSerializer(serializers.Serializer):
     path = serializers.CharField(required=True, max_length=255)
+
 
 class UpdateProfileSerializer(serializers.Serializer):
     avatar = serializers.CharField(required=False, max_length=255)

@@ -46,3 +46,4 @@ class ProfileContent():
     Accout = 1
     Profile = 2
     All = 3
+    Custom = 4
