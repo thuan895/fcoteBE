@@ -120,8 +120,8 @@ def getProfile(request):
             if "username" in data and account.username != data["username"]:
                 account = Account.objects.filter(username=data["username"])
                 account = account[0]
-            if "type" in data:
-                if data["type"] == ProfileContent.Profile:
+            if "typeData" in data:
+                if data["typeData"] == ProfileContent.Profile:
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
@@ -149,7 +149,7 @@ def getProfile(request):
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
                         return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_400)
-                elif data["type"] == ProfileContent.All:
+                elif data["typeData"] == ProfileContent.All:
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]
@@ -186,7 +186,7 @@ def getProfile(request):
                         return JsonResponse(responseData, status=HTTP_200)
                     else:
                         return JsonResponse(NOT_EXIST_PROFILE, status=HTTP_400)
-                elif data["type"] == ProfileContent.Custom:
+                elif data["typeData"] == ProfileContent.Custom:
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         profile = profile[0]

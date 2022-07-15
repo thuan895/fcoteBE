@@ -19,7 +19,7 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 class GetProfiledSerializer(serializers.Serializer):
-    type = serializers.CharField(required=False, max_length=255)
+    typeData = serializers.CharField(required=False, max_length=255)
     username = serializers.CharField(required=False, max_length=255)
 
 
