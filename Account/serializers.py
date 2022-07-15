@@ -41,7 +41,6 @@ class UpdateProfileSerializer(serializers.Serializer):
 
 
 class GetRankingSerializer(serializers.Serializer):
-    type = serializers.IntegerField(required=False)
+    typeRanking = serializers.IntegerField(required=True)
     pageSize = serializers.IntegerField(required=False,)
     pageNumber = serializers.IntegerField(required=False,)
-

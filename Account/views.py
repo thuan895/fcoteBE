@@ -349,18 +349,23 @@ def getRanking(request):
         try:
             data = request.data
             ######### Handle #########
-            if data["type"] == RankingType.User:
+            if data["typeRanking"] == RankingType.User:
                 profiles = Profile.objects.all().order_by("-total_score")
                 currentUserProfile = Profile.objects.get(account=account)
                 currentPosition = list(profiles).index(currentUserProfile) + 1
                 top3 = []
+
                 for i in range(0, 3):
+                    if profiles[i].organization == None:
+                        organization = profiles[i].organization
+                    else:
+                        organization = profiles[i].organization.title
                     item = {"id": profiles[i].account.id,
                             "order": i+1,
                             "username": profiles[i].account.username,
                             "fullname": profiles[i].account.fullname(),
                             "avatar": profiles[i].avatar,
-                            "organization": profiles[i].organization.title,
+                            "organization": organization,
                             "total_score": profiles[i].total_score,
                             }
                     top3.append(item)
@@ -371,22 +376,30 @@ def getRanking(request):
                         profiles, None, data["pageSize"], data["pageNumber"])
                 print(profiles)
                 for i in range(0, len(profiles)):
+
+                    if profiles[i].organization == None:
+                        organization = profiles[i].organization
+                    else:
+                        organization = profiles[i].organization.title
                     item = {"id": profiles[i].account.id,
                             "order": i+4,
                             "username": profiles[i].account.username,
                             "fullname": profiles[i].account.fullname(),
                             "avatar": profiles[i].avatar,
-                            "organization": profiles[i].organization.title,
+                            "organization": organization,
                             "total_score": profiles[i].total_score,
                             }
                     rankingList.append(item)
-
+                if currentUserProfile.organization == None:
+                    organization = currentUserProfile.organization
+                else:
+                    organization = currentUserProfile.organization.title
                 current = {"id": currentUserProfile.account.id,
                            "order": currentPosition,
                            "username": currentUserProfile.account.username,
                            "fullname": currentUserProfile.account.fullname(),
                            "avatar": currentUserProfile.avatar,
-                           "organization": currentUserProfile.organization.title,
+                           "organization": organization,
                            "total_score": currentUserProfile.total_score,
                            }
 
