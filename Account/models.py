@@ -8,6 +8,7 @@ from django.db.models.fields.related import ForeignKey
 class Organization(models.Model):
     title = CharField(max_length=255, blank=True, null=True)
     address = TextField(blank=True, null=True)
+    total_score = IntegerField(blank=True, null=True, default=0)
     is_active = BooleanField(default=True, blank=True, null=True)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)

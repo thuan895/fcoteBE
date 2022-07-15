@@ -363,7 +363,6 @@ def getRanking(request):
                     item = {"id": profiles[i].account.id,
                             "order": i+1,
                             "username": profiles[i].account.username,
-                            "fullname": profiles[i].account.fullname(),
                             "avatar": profiles[i].avatar,
                             "organization": organization,
                             "total_score": profiles[i].total_score,
@@ -384,7 +383,6 @@ def getRanking(request):
                     item = {"id": profiles[i].account.id,
                             "order": i+4,
                             "username": profiles[i].account.username,
-                            "fullname": profiles[i].account.fullname(),
                             "avatar": profiles[i].avatar,
                             "organization": organization,
                             "total_score": profiles[i].total_score,
@@ -397,7 +395,6 @@ def getRanking(request):
                 current = {"id": currentUserProfile.account.id,
                            "order": currentPosition,
                            "username": currentUserProfile.account.username,
-                           "fullname": currentUserProfile.account.fullname(),
                            "avatar": currentUserProfile.avatar,
                            "organization": organization,
                            "total_score": currentUserProfile.total_score,
@@ -409,63 +406,60 @@ def getRanking(request):
                     "current_user": current,
                     "currentSize": len(profiles)
                 }
-            # if data["type"] == RankingType.OrganizationRanking:
-            #     organizations = Organization.objects.all()
-            #     currentUserProfile = Profile.objects.get(account=account)
-            #     currentTotal=0
-            #     organizationRaking = []
-            #     for org in organizations:
-            #         total = 0
-            #         profiles = Profile.objects.filter(organization=org)
-            #         for prf in profiles:
-            #             total = total + prf.total_score
-            #         organizationRaking.append(total)
-            #         if org == currentUserProfile.organization:
-            #             currentTotal = total
-            #     organizationRaking.sort(reverse=True)
-            #     currentTotal = list(organizationRaking).index(currentTotal) + 1
-            #     top3 = []
-            #     for i in range(0, 3):
-            #         item = {"id": organizationRaking[i].account.id,
-            #                 "order": i+1,
-            #                 "username": organizationRaking[i].account.username,
-            #                 "fullname": organizationRaking[i].account.fullname(),
-            #                 "avatar": organizationRaking[i].avatar,
-            #                 "organization": organizationRaking[i].organization.title,
-            #                 "total_score": organizationRaking[i].total_score,
-            #                 }
-            #         top3.append(item)
-            #     rankingList = []
-            #     if ("pageSize" in data) and ("pageNumber" in data) and len(profiles) > 3:
-            #         organizationRaking = organizationRaking[3:]
-            #         organizationRaking = paginate_data(
-            #             organizationRaking, None, data["pageSize"], data["pageNumber"])
-            #     for i in range(0, len(organizationRaking)):
-            #         item = {"id": organizationRaking[i].account.id,
-            #                 "order": i+4,
-            #                 "username": organizationRaking[i].account.username,
-            #                 "fullname": organizationRaking[i].account.fullname(),
-            #                 "avatar": organizationRaking[i].avatar,
-            #                 "organization": organizationRaking[i].organization.title,
-            #                 "total_score": organizationRaking[i].total_score,
-            #                 }
-            #         rankingList.append(item)
+            if data["typeRanking"] == RankingType.OrganizationRanking:
+                organizations = Organization.objects.all()
+                currentUserProfile = Profile.objects.get(account=account)
+                organizationRaking = []
+                for org in organizations:
+                    total = 0
+                    profiles = Profile.objects.filter(organization=org)
+                    for prf in profiles:
+                        total = total + prf.total_score
+                    organizationRaking.append(total)
+                    org.total_score = total
+                    org.save()
+                organizations = organizations.order_by("-total_score")
+                currentPosition = list(organizations).index(
+                    currentUserProfile.organization) + 1
+                top3 = []
+                for i in range(0, 3):
+                    item = {"id": organizations[i].id,
+                            "order": i+1,
+                            "username": organizations[i].title,
+                            "avatar": None,
+                            "organization": organizations[i].title,
+                            "total_score": organizations[i].total_score,
+                            }
+                    top3.append(item)
+                rankingList = []
+                if ("pageSize" in data) and ("pageNumber" in data) and len(organizations) > 3:
+                    organizations = organizations[3:]
+                    organizations = paginate_data(
+                        organizations, None, data["pageSize"], data["pageNumber"])
+                for i in range(0, len(organizations)):
+                    item = {"id": organizations[i].id,
+                            "order": i+4,
+                            "username": organizations[i].title,
+                            "avatar": None,
+                            "organization": organizations[i].title,
+                            "total_score": organizations[i].total_score,
+                            }
+                    rankingList.append(item)
 
-            #     current = {"id": currentUserProfile.id,
-            #                "order": currentPosition,
-            #                "username": currentUserProfile.account.username,
-            #                "fullname": currentUserProfile.account.fullname(),
-            #                "avatar": currentUserProfile.avatar,
-            #                "organization": currentUserProfile.organization.title,
-            #                "total_score": currentUserProfile.total_score,
-            #                }
+                current = {"id": currentUserProfile.organization.id,
+                           "order": currentPosition,
+                           "username": currentUserProfile.organization.title,
+                           "avatar": None,
+                           "organization": currentUserProfile.organization.title,
+                           "total_score": currentUserProfile.organization.total_score,
+                           }
 
-            #     dataResponse = {
-            #         "top3": top3,
-            #         "ranking_list": rankingList,
-            #         "current_user": current,
-            #         "currentSize": len(profiles)
-            #     }
+                dataResponse = {
+                    "top3": top3,
+                    "ranking_list": rankingList,
+                    "current_user": current,
+                    "currentSize": len(profiles)
+                }
             return JsonResponse(dataResponse, status=HTTP_200)
         except Exception as e:
             print(e)
