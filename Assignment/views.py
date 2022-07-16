@@ -91,34 +91,21 @@ def getListAssignment(request):
                     Q(title__icontains=keyword) | Q(description__icontains=keyword))
             if ("pageSize" in data) and ("pageNumber" in data):
                 assignments = paginate_data(
-                    assignments, AssignmentSerializer, data["pageSize"], data["pageNumber"])
+                    assignments, None, data["pageSize"], data["pageNumber"])
             responseData = {}
             listData = []
             for assignment in assignments:
-                if ("pageSize" in data) and ("pageNumber" in data):
-                    assignmentData = {
-                        "id": assignment["id"],
-                        "title": assignment["title"],
-                        "image": assignment["image"],
-                        "difficulty": assignment["difficulty"],
-                        "score": assignment["score"],
-                        # "assignment_tag": assignment["assignment_tag"],
-                        "total_participant": assignment["total_participant"],
-                        "created_by": Account.objects.get(id=assignment["created_by"]).username,
-                        "created_at": assignment["created_at"]
-                    }
-                else:
-                    assignmentData = {
-                        "id": assignment.id,
-                        "title": assignment.title,
-                        "image": assignment.image,
-                        "difficulty": assignment.difficulty,
-                        "score": assignment.score,
-                        # "assignment_tag": assignment.assignment_tag.id,
-                        "total_participant": assignment.total_participant,
-                        "created_by": assignment.created_by.username,
-                        "created_at": assignment.date()
-                    }
+                assignmentData = {
+                    "id": assignment.id,
+                    "title": assignment.title,
+                    "image": assignment.image,
+                    "difficulty": assignment.difficulty,
+                    "score": assignment.score,
+                    # "assignment_tag": assignment.assignment_tag.id,
+                    "total_participant": assignment.total_participant,
+                    "createdBy": assignment.created_by.username,
+                    "createdAt": assignment.date()
+                }
                 listData.append(assignmentData)
             responseData["assignments"] = listData
             responseData["currentSize"] = len(assignments)
@@ -156,7 +143,7 @@ def getAssignmentDetail(request):
                     # "assignment_tag": assignment[0].assignment_tag.id,
                     "character_limit": assignment[0].character_limit,
                     "total_participant": assignment[0].total_participant,
-                    "created_by": assignment[0].created_by.username,
+                    "createdBy": assignment[0].created_by.username,
                 }
                 responseData["AssignmentDetail"] = assignmentData
                 assignmentLanguages = AssignmentLanguage.objects.filter(

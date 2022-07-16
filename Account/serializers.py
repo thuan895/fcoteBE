@@ -37,7 +37,6 @@ class UpdateProfileSerializer(serializers.Serializer):
     country = serializers.CharField(required=False, max_length=255)
     first_name = serializers.CharField(required=False, max_length=255)
     last_name = serializers.CharField(required=False, max_length=255)
-    email = serializers.CharField(required=False, max_length=255)
 
 
 class GetRankingSerializer(serializers.Serializer):

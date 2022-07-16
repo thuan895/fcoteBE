@@ -25,6 +25,12 @@ class Challenge(models.Model):
     def __str__(self):
         return self.title
 
+    def dateEnd(seft):
+        return seft.end_at.strftime("%Y-%m-%d %H:%M:%S")
+    
+    def dateStart(seft):
+        return seft.end_at.strftime("%Y-%m-%d %H:%M:%S")
+
 
 class ChallengeElement(models.Model):
     challenge = ForeignKey(

@@ -326,8 +326,6 @@ def updateProfile(request):
                 account.first_name = data["first_name"]
             if "last_name" in data:
                 account.last_name = data["last_name"]
-            if "email" in data:
-                account.email = data["email"]
             profile.save()
             account.save()
             return JsonResponse(SUCCESS, status=HTTP_200)

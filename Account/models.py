@@ -33,6 +33,8 @@ class Account(models.Model):
     def fullname(self):
         return self.first_name + " "+self.last_name
 
+    def date(self):
+        return self.created_date.strftime("%d-%m-%Y")
 
 class Profile(models.Model):
     account = ForeignKey(Account, on_delete=models.CASCADE,

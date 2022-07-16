@@ -22,4 +22,5 @@ urlpatterns = [
     # path("api/auth/", include("authentication.urls")),
     path("api/account/", include("Account.urls")),
     path("api/assignment/", include("Assignment.urls")),
+    path("api/challenge/", include("Challenge.urls")),
 ]

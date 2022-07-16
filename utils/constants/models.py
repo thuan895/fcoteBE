@@ -52,3 +52,10 @@ class ProfileContent():
 class RankingType():
     User = 1
     OrganizationRanking = 2
+
+
+class ChallengeTypeContent():
+    Public = 1
+    Group = 2
+    Owner = 3
+    Completed = 4
