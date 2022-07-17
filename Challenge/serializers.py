@@ -11,12 +11,14 @@ class ListChallengeSerializer(serializers.Serializer):
     groupID = serializers.IntegerField(required=False)
     pageSize = serializers.IntegerField(required=False,)
     pageNumber = serializers.IntegerField(required=False,)
+    username = serializers.CharField(required=False, max_length=255)
 
 
 class ChallengesSerializer(serializers.Serializer):
     class Meta:
         modle = Challenge
         fields = "__all__"
+
 
 class ChallengeDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=True,)

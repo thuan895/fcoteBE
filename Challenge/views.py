@@ -8,6 +8,7 @@ from utils.api.http_status import *
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 from utils.constants.models import ChallengeTypeContent
+from utils.response.assignment import NOT_FOUND_USER_FILTER
 from utils.response.challenge import *
 from utils.response.common import *
 from .models import *
@@ -15,6 +16,7 @@ from Account.models import Profile
 from utils.constants.firebase import FirebaseConfig
 from Submit.models import Submit
 import pyrebase
+from django.db.models import Q
 # Create your views here.
 
 
@@ -47,16 +49,31 @@ def getListChallenge(request):
                     return JsonResponse(NOT_FOUND_CHALLENGE, status=HTTP_400)
             elif data["typeData"] == ChallengeTypeContent.Owner:
                 challenges = challenges.filter(created_by=account)
-            elif data["typeData"] == ChallengeTypeContent.Completed:
+            elif data["typeData"] == ChallengeTypeContent.Completed and ("username" not in data):
                 submited = Submit.objects.filter(account=account)
                 completedChallengeId = []
                 for i in submited:
                     if i.challenge not in completedChallengeId:
                         completedChallengeId.append(i.challenge)
                 challenges = completedChallengeId
+            elif data["typeData"] == ChallengeTypeContent.Completed and ("username" in data):
+                author = Account.objects.filter(
+                    username=data["username"])
+                if author.exists():
+                    submited = Submit.objects.filter(account=author[0])
+                    completedChallengeId = []
+                    for i in submited:
+                        if i.challenge not in completedChallengeId:
+                            completedChallengeId.append(i.challenge)
+                    challenges = completedChallengeId
+                else:
+                    return JsonResponse(NOT_FOUND_USER_FILTER, status=HTTP_400)
             else:
                 return JsonResponse(FAILURE, status=HTTP_400)
-
+            if "searchBy" in data:
+                keyword = data["searchBy"]
+                challenges = challenges.filter(
+                    Q(title__icontains=keyword) | Q(description__icontains=keyword))
             if ("pageSize" in data) and ("pageNumber" in data):
                 challenges = paginate_data(
                     challenges, None, data["pageSize"], data["pageNumber"])
