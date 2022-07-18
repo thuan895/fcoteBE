@@ -334,3 +334,27 @@ def sampleView(request):
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['POST'])
+def deleteAssignment(request):
+    requestData = AssignmentDeleteSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            assignment = Assignment.objects.filter(id=data["assignmentId"])
+            if assignment.exists():
+                assignment.delete()
+            else:
+                return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
+
+            return JsonResponse(SUCCESS, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)

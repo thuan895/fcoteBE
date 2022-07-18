@@ -59,3 +59,9 @@ class ChallengeTypeContent():
     Group = 2
     Owner = 3
     Completed = 4
+
+
+class challengeStatus():
+    NotOpenYet = 1
+    Open = 2
+    Close = 3

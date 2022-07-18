@@ -67,3 +67,6 @@ class CreateAssignmentSerializer(serializers.Serializer):
     inputOutput = CreateAssignmentParammeterSerializer(required=True,)
     authorSolution = serializers.CharField(required=False, max_length=10000)
     testCase = CreateTestCaseElementSerializer(required=True, many=True)
+
+class AssignmentDeleteSerializer(serializers.Serializer):
+    assignmentId = serializers.IntegerField(required=True,)

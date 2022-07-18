@@ -22,3 +22,20 @@ class ChallengesSerializer(serializers.Serializer):
 
 class ChallengeDetailSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=True,)
+
+
+class ChallengeElementSerializer(serializers.Serializer):
+    assignmentId = serializers.IntegerField(required=True,)
+
+
+class ChallengeCreateSerializer(serializers.Serializer):
+    title = serializers.CharField(required=True, max_length=255)
+    description = serializers.CharField(required=True, max_length=10000)
+    image = serializers.CharField(required=False, max_length=255)
+    groupId = serializers.IntegerField(required=True,)
+    startAt = serializers.CharField(required=False, max_length=255)
+    endAt = serializers.CharField(required=False, max_length=255)
+    element = ChallengeElementSerializer(required=False, many=True)
+
+class ChallengeDeleteSerializer(serializers.Serializer):
+    challengeId = serializers.IntegerField(required=True,)

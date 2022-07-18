@@ -27,9 +27,9 @@ class Challenge(models.Model):
 
     def dateEnd(seft):
         return seft.end_at.strftime("%Y-%m-%d %H:%M:%S")
-    
+
     def dateStart(seft):
-        return seft.end_at.strftime("%Y-%m-%d %H:%M:%S")
+        return seft.start_at.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class ChallengeElement(models.Model):
@@ -39,3 +39,6 @@ class ChallengeElement(models.Model):
         Assignment, on_delete=models.CASCADE,  blank=True, null=True)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.challenge.title + "-"+self.assignment.title

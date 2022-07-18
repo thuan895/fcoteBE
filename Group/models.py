@@ -19,6 +19,7 @@ class Group(models.Model):
     def __str__(self):
         return self.title
 
+
 class GroupMember(models.Model):
     group = ForeignKey(
         Group, on_delete=models.CASCADE,  blank=True, null=True)
@@ -30,3 +31,6 @@ class GroupMember(models.Model):
     is_active = BooleanField(default=True, blank=True, null=True)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.group.title + "-"+self.account.username

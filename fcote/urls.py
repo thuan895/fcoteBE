@@ -23,4 +23,6 @@ urlpatterns = [
     path("api/account/", include("Account.urls")),
     path("api/assignment/", include("Assignment.urls")),
     path("api/challenge/", include("Challenge.urls")),
+    path("api/group/", include("Group.urls")),
+    path("api/submit/", include("Submit.urls")),
 ]

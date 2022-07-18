@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 import pyrebase
 from requests import HTTPError
 from rest_framework.decorators import api_view
@@ -464,3 +466,20 @@ def getRanking(request):
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['GET'])
+def signout(request):
+    account = validate_account(request)
+    if (account == None):
+        return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+    if (account.is_active == False):
+        return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+    try:
+        code = ''.join(random.choice(
+            string.ascii_uppercase + string.digits) for _ in range(20))
+        account.token = code
+        account.save()
+        return JsonResponse(SUCCESS, status=HTTP_200)
+    except Exception as e:
+        return JsonResponse(FAILURE, status=HTTP_400)

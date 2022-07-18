@@ -8,4 +8,6 @@ urlpatterns = [
     path('get-list-assignment', getListAssignment),
     path('get-assignment-detail', getAssignmentDetail),
     path('add-assignment', addAssignment),
+    path('delete-assignment', deleteAssignment),
+
 ]
