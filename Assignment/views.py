@@ -146,7 +146,7 @@ def getAssignmentDetail(request):
                 for asmlg in assignmentLanguages:
                     asmlgResponse = {"id": asmlg.id,
                                      "language": asmlg.language.title,
-                                     "timeLimit": asmlg.timeLimit}
+                                     "timeLimit": asmlg.time_limit}
                     assignmentLanguagesResponse.append(asmlgResponse)
                 responseData["AssignmentLanguages"] = assignmentLanguagesResponse
                 parammeters = Parammeter.objects.filter(
@@ -237,7 +237,7 @@ def addAssignment(request):
                         obj = AssignmentLanguage()
                         obj.assignment = assignment
                         obj.language = language[0]
-                        obj.timeLimit = lgg["timeLimit"]
+                        obj.time_limit = lgg["timeLimit"]
                 obj.save()
                 ##########################
                 for input in data["inputOutput"]["input"]:

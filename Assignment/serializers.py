@@ -30,7 +30,7 @@ class CreateAssignmentSettingSerializer(serializers.Serializer):
 
 class CreateAssignmentLanguageSerializer(serializers.Serializer):
     language = serializers.CharField(required=True, max_length=255)
-    time_limit = serializers.IntegerField(required=False,)
+    timeLimit = serializers.IntegerField(required=False,)
 
 
 class CreateAssignmentParammeterDetailSerializer(serializers.Serializer):
