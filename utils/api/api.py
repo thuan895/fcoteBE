@@ -13,6 +13,7 @@ def validate_account(request):
 
 
 def paginate_data(query_set, object_serializer=None, limit=10, offset=0):
+    offset -= 1
     if limit < 0 or limit > 250:
         limit = 10
     if offset < 0:

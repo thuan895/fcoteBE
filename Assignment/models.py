@@ -50,7 +50,7 @@ class Assignment(models.Model):
         return self.title
 
     def date(seft):
-        return seft.created_at.strftime("%d-%m-%Y")
+        return seft.created_at.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class AssignmentLanguage(models.Model):

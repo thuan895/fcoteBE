@@ -64,17 +64,11 @@ def getListAssignment(request):
         try:
             data = request.data
             assignments = Assignment.objects.filter(is_active=True)
-            if "filterByCreatedByUserID" in data:
-                if data["filterByCreatedByUserID"] == str(account.id):
+            if "filterByCurrentAccount" in data:
+                if data["filterByCurrentAccount"]:
                     assignments = assignments.filter(created_by=account)
                 else:
-                    author = Account.objects.filter(
-                        id=data["filterByCreatedByUserID"])
-                    if author.exists():
-                        assignments = assignments.filter(
-                            created_by=author[0], quality_assurance=True)
-                    else:
-                        return JsonResponse(NOT_FOUND_USER_FILTER, status=HTTP_400)
+                    assignments = assignments.filter(quality_assurance=True)
             else:
                 assignments = assignments.filter(quality_assurance=True)
 
@@ -102,7 +96,7 @@ def getListAssignment(request):
                     "difficulty": assignment.difficulty,
                     "score": assignment.score,
                     # "assignment_tag": assignment.assignment_tag.id,
-                    "total_participant": assignment.total_participant,
+                    "totalParticipant": assignment.total_participant,
                     "createdBy": assignment.created_by.username,
                     "createdAt": assignment.date()
                 }
@@ -138,11 +132,11 @@ def getAssignmentDetail(request):
                     "sample": assignment[0].sample,
                     # "image": assignment[0].image,
                     "difficulty": assignment[0].difficulty,
-                    "total_test_case": assignment[0].total_test_case,
+                    "total_testCase": assignment[0].total_test_case,
                     "score": assignment[0].score,
                     # "assignment_tag": assignment[0].assignment_tag.id,
-                    "character_limit": assignment[0].character_limit,
-                    "total_participant": assignment[0].total_participant,
+                    "characterLimit": assignment[0].character_limit,
+                    "totalParticipant": assignment[0].total_participant,
                     "createdBy": assignment[0].created_by.username,
                 }
                 responseData["AssignmentDetail"] = assignmentData
@@ -152,7 +146,7 @@ def getAssignmentDetail(request):
                 for asmlg in assignmentLanguages:
                     asmlgResponse = {"id": asmlg.id,
                                      "language": asmlg.language.title,
-                                     "time_limit": asmlg.time_limit}
+                                     "timeLimit": asmlg.timeLimit}
                     assignmentLanguagesResponse.append(asmlgResponse)
                 responseData["AssignmentLanguages"] = assignmentLanguagesResponse
                 parammeters = Parammeter.objects.filter(
@@ -164,7 +158,7 @@ def getAssignmentDetail(request):
                                    "order": prm.order,
                                    "type": prm.type,
                                    "name": prm.name,
-                                   "data_type": prm.data_type,
+                                   "dataType": prm.data_type,
                                    "description": prm.description}
                     parammetersResponse.append(prmResponse)
                 responseData["Parammeters"] = parammetersResponse
@@ -175,7 +169,7 @@ def getAssignmentDetail(request):
                         testCase = {"id": testCase.id,
                                     "assignment": testCase.assignment.id,
                                     "order": testCase.order,
-                                    "is_private": testCase.is_private}
+                                    "isPrivate": testCase.is_private}
                         testCasesResponse.append(testCase)
                     else:
                         testCaseElements = TestCaseElement.objects.filter(
@@ -183,17 +177,17 @@ def getAssignmentDetail(request):
                         testCaseElmList = []
                         for elm in testCaseElements:
                             elmData = {"id": elm.id,
-                                       "test_case": elm.test_case.id,
+                                       "testCase": elm.test_case.id,
                                        "order": elm.order,
                                        "type": elm.type,
-                                       "data_type": elm.data_type,
+                                       "dataType": elm.data_type,
                                        "value": elm.value}
                             testCaseElmList.append(elmData)
                         testCase = {"id": testCase.id,
                                     "assignment": testCase.assignment.id,
                                     "order": testCase.order,
                                     "element": testCaseElmList,
-                                    "is_private": testCase.is_private}
+                                    "isPrivate": testCase.is_private}
                         testCasesResponse.append(testCase)
                 responseData["TestCases"] = testCasesResponse
                 return JsonResponse(responseData, status=HTTP_200)
@@ -243,7 +237,7 @@ def addAssignment(request):
                         obj = AssignmentLanguage()
                         obj.assignment = assignment
                         obj.language = language[0]
-                        obj.time_limit = lgg["time_limit"]
+                        obj.timeLimit = lgg["timeLimit"]
                 obj.save()
                 ##########################
                 for input in data["inputOutput"]["input"]:

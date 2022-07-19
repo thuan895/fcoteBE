@@ -6,8 +6,7 @@ from Assignment.models import Assignment
 class ListAssignmentSerializer(serializers.Serializer):
     filterByStatus = serializers.CharField(required=False, max_length=255)
     filterByDifficult = serializers.CharField(required=False, max_length=255)
-    filterByCreatedByUserID = serializers.CharField(
-        required=False, max_length=255)
+    filterByCurrentAccount = serializers.BooleanField(required=False)
     searchBy = serializers.CharField(required=False, max_length=255)
     pageSize = serializers.IntegerField(required=False,)
     pageNumber = serializers.IntegerField(required=False,)
@@ -67,6 +66,7 @@ class CreateAssignmentSerializer(serializers.Serializer):
     inputOutput = CreateAssignmentParammeterSerializer(required=True,)
     authorSolution = serializers.CharField(required=False, max_length=10000)
     testCase = CreateTestCaseElementSerializer(required=True, many=True)
+
 
 class AssignmentDeleteSerializer(serializers.Serializer):
     assignmentId = serializers.IntegerField(required=True,)

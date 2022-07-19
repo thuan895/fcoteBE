@@ -65,3 +65,10 @@ class challengeStatus():
     NotOpenYet = 1
     Open = 2
     Close = 3
+
+
+class assignmentStatus():
+    ALL = 0
+    SOLVED = 1
+    NOT_SOLVED = 2
+    IN_PROGRESS = 3

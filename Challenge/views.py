@@ -54,8 +54,9 @@ def getListChallenge(request):
                 submited = Submit.objects.filter(account=account)
                 completedChallengeId = []
                 for i in submited:
-                    if i.challenge not in completedChallengeId:
-                        completedChallengeId.append(i.challenge)
+                    if i.challenge_element.challenge not in completedChallengeId:
+                        completedChallengeId.append(
+                            i.challenge_element.challenge)
                 challenges = completedChallengeId
             elif data["typeData"] == ChallengeTypeContent.Completed and ("username" in data):
                 author = Account.objects.filter(
@@ -64,8 +65,9 @@ def getListChallenge(request):
                     submited = Submit.objects.filter(account=author[0])
                     completedChallengeId = []
                     for i in submited:
-                        if i.challenge not in completedChallengeId:
-                            completedChallengeId.append(i.challenge)
+                        if i.challenge_element.challenge not in completedChallengeId:
+                            completedChallengeId.append(
+                                i.challenge_element.challenge)
                     challenges = completedChallengeId
                 else:
                     return JsonResponse(NOT_FOUND_USER_FILTER, status=HTTP_400)
