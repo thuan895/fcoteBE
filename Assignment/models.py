@@ -19,6 +19,7 @@ class AssignmentTag(models.Model):
 class Language(models.Model):
     title = CharField(max_length=255, blank=True, null=True)
     is_active = BooleanField(default=True, blank=True, null=True)
+    code = CharField(max_length=255, blank=True, null=True)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
 

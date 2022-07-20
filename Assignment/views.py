@@ -129,7 +129,7 @@ def getAssignmentDetail(request):
                     "id": assignment[0].id,
                     "title": assignment[0].title,
                     "description": assignment[0].description,
-                    "sample": assignment[0].sample,
+                    # "sample": assignment[0].sample,
                     # "image": assignment[0].image,
                     "difficulty": assignment[0].difficulty,
                     "total_testCase": assignment[0].total_test_case,
@@ -215,7 +215,6 @@ def addAssignment(request):
                 obj = Assignment()
                 obj.title = data["setting"]["name"]
                 obj.description = data["setting"]["description"]
-                obj.sample = data["authorSolution"]
                 difficulty = data["setting"]["difficulty"]
                 obj.difficulty = difficulty
                 obj.total_test_case = len(data["testCase"])

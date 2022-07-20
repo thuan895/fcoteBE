@@ -64,7 +64,6 @@ class CreateAssignmentSerializer(serializers.Serializer):
     setting = CreateAssignmentSettingSerializer(required=True,)
     language = CreateAssignmentLanguageSerializer(required=False, many=True)
     inputOutput = CreateAssignmentParammeterSerializer(required=True,)
-    authorSolution = serializers.CharField(required=False, max_length=10000)
     testCase = CreateTestCaseElementSerializer(required=True, many=True)
 
 
