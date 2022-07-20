@@ -169,6 +169,7 @@ def getAssignmentDetail(request):
                         testCase = {"id": testCase.id,
                                     "assignment": testCase.assignment.id,
                                     "order": testCase.order,
+                                    "element": [],
                                     "isPrivate": testCase.is_private}
                         testCasesResponse.append(testCase)
                     else:

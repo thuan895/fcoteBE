@@ -47,6 +47,7 @@ def runAssignment(request):
                             "language": language.code
 
                         }
+                        print(input)
                         result = requests.post(
                             url,  data=json.dumps(payload), headers=header)
                         resultRun = json.loads(result.content)
@@ -54,13 +55,14 @@ def runAssignment(request):
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])
-                        outputAct = outputAct[:len(outputAct)-2]
+                        outputAct = outputAct[:len(outputAct)-1]
                         if outputExpec == outputAct:
                             matchExpec = True
                         else:
                             matchExpec = False
                         response = {
-                            "Success": matchExpec,
+                            "testCaseId": testCase.id,
+                            "success": matchExpec,
                             "runSuccess": resultRun["success"],
                             "actualOutput": outputAct,
                             "expectedOutput": outputExpec,
@@ -88,9 +90,55 @@ def submitAssignment(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
-            print(data)
+            assignment = Assignment.objects.filter(id=data["assignmentId"])
+            if assignment.exists():
+                testCases = TestCase.objects.filter(
+                    assignment=assignment[0], is_private=False)
+                language = Language.objects.filter(id=data["language"])[0]
+                resultAll = []
+                for testCase in testCases:
+                    elements = TestCaseElement.objects.filter(
+                        test_case=testCase)
+                    if elements.exists():
+                        input = ""
+                        for element in elements.filter(type=InOutType.input):
+                            input += str(element.value)+"\n"
+                        url = "https://api2.sololearn.com/v2/codeplayground/v2/compile"
+                        header = {
+                            "Content-Type": "application/json",
+                        }
+                        payload = {
+                            "code": data["sourceCode"],
+                            "codeId": None,
+                            "input": input,
+                            "language": language.code
 
-            return JsonResponse(SUCCESS, status=HTTP_200)
+                        }
+                        print(input)
+                        result = requests.post(
+                            url,  data=json.dumps(payload), headers=header)
+                        resultRun = json.loads(result.content)
+                        print(resultRun)
+                        outputExpec = str(elements.filter(
+                            type=InOutType.output)[0].value)
+                        outputAct = str(resultRun["data"]["output"])
+                        outputAct = outputAct[:len(outputAct)-1]
+                        if outputExpec == outputAct:
+                            matchExpec = True
+                        else:
+                            matchExpec = False
+                        response = {
+                            "testCaseId": testCase.id,
+                            "success": matchExpec,
+                            "runSuccess": resultRun["success"],
+                            "actualOutput": outputAct,
+                            "expectedOutput": outputExpec,
+                        }
+                        resultAll.append(response)
+            responseDate = {
+                "result": resultAll
+            }
+            return JsonResponse(responseDate, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
