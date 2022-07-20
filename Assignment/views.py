@@ -161,7 +161,7 @@ def getAssignmentDetail(request):
                                    "dataType": prm.data_type,
                                    "description": prm.description}
                     parammetersResponse.append(prmResponse)
-                responseData["parammeters"] = parammetersResponse
+                responseData["parameters"] = parammetersResponse
                 testCases = TestCase.objects.filter(assignment=assignment[0])
                 testCasesResponse = []
                 for testCase in testCases:
