@@ -139,7 +139,7 @@ def getAssignmentDetail(request):
                     "totalParticipant": assignment[0].total_participant,
                     "createdBy": assignment[0].created_by.username,
                 }
-                responseData["AssignmentDetail"] = assignmentData
+                responseData["assignmentDetail"] = assignmentData
                 assignmentLanguages = AssignmentLanguage.objects.filter(
                     assignment=assignment[0])
                 assignmentLanguagesResponse = []
@@ -189,7 +189,7 @@ def getAssignmentDetail(request):
                                     "element": testCaseElmList,
                                     "isPrivate": testCase.is_private}
                         testCasesResponse.append(testCase)
-                responseData["TestCases"] = testCasesResponse
+                responseData["testCases"] = testCasesResponse
                 return JsonResponse(responseData, status=HTTP_200)
             else:
                 return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
