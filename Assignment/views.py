@@ -148,7 +148,7 @@ def getAssignmentDetail(request):
                                      "language": asmlg.language.title,
                                      "timeLimit": asmlg.time_limit}
                     assignmentLanguagesResponse.append(asmlgResponse)
-                responseData["AssignmentLanguages"] = assignmentLanguagesResponse
+                responseData["assignmentLanguages"] = assignmentLanguagesResponse
                 parammeters = Parammeter.objects.filter(
                     assignment=assignment[0])
                 parammetersResponse = []
@@ -161,7 +161,7 @@ def getAssignmentDetail(request):
                                    "dataType": prm.data_type,
                                    "description": prm.description}
                     parammetersResponse.append(prmResponse)
-                responseData["Parammeters"] = parammetersResponse
+                responseData["parammeters"] = parammetersResponse
                 testCases = TestCase.objects.filter(assignment=assignment[0])
                 testCasesResponse = []
                 for testCase in testCases:
