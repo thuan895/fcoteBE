@@ -139,7 +139,7 @@ def getAssignmentDetail(request):
                     "totalParticipant": assignment[0].total_participant,
                     "createdBy": assignment[0].created_by.username,
                 }
-                responseData["assignmentDetail"] = assignmentData
+                responseData["detail"] = assignmentData
                 assignmentLanguages = AssignmentLanguage.objects.filter(
                     assignment=assignment[0])
                 assignmentLanguagesResponse = []
@@ -148,7 +148,7 @@ def getAssignmentDetail(request):
                                      "language": asmlg.language.title,
                                      "timeLimit": asmlg.time_limit}
                     assignmentLanguagesResponse.append(asmlgResponse)
-                responseData["assignmentLanguages"] = assignmentLanguagesResponse
+                responseData["languages"] = assignmentLanguagesResponse
                 parammeters = Parammeter.objects.filter(
                     assignment=assignment[0])
                 parammetersResponse = []
