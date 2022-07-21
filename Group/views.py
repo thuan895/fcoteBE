@@ -138,6 +138,10 @@ def createGroup(request):
             grp.created_by = account
             grp.image = data["image"]
             grp.save()
+            member = GroupMember()
+            member.group = grp
+            member.account = account
+            member.save()
             return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
@@ -199,4 +203,3 @@ def joinGroup(request):
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
-

@@ -2,6 +2,7 @@
 import json
 from django.http import JsonResponse
 from Assignment.serializers import *
+from Challenge.models import Challenge, ChallengeElement
 from utils.api.api import paginate_data, validate_account
 from utils.api.http_status import *
 from utils.response.assignment import *
@@ -230,6 +231,11 @@ def addAssignment(request):
                 obj.created_by = account
                 obj.save()
                 assignment = obj
+                challengeGlobal = Challenge.objects.filter(id=1)
+                challengeElm = ChallengeElement()
+                challengeElm.challenge = challengeGlobal[0]
+                challengeElm.assignment = assignment
+                challengeElm.save()
                 ##########################
                 for lgg in data["language"]:
                     language = Language.objects.filter(title=lgg["language"])

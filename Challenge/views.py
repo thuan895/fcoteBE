@@ -244,6 +244,7 @@ def createChallenge(request):
                 chlg.start_at = data["startAt"]
                 chlg.end_at = data["endAt"]
                 chlg.save()
+                
                 for asm in data["element"]:
                     asmObj = Assignment.objects.filter(id=asm["assignmentId"])
                     if asmObj.exists():
