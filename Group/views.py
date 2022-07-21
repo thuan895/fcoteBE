@@ -137,6 +137,7 @@ def createGroup(request):
             grp.join_code = code
             grp.created_by = account
             grp.image = data["image"]
+            grp.total_member = 1
             grp.save()
             member = GroupMember()
             member.group = grp
@@ -195,6 +196,9 @@ def joinGroup(request):
                 grpMb.group = group[0]
                 grpMb.account = account
                 grpMb.save()
+                groupDetail = Group.objects.get(id=group[0].id)
+                groupDetail.total_member = group[0].total_member + 1
+                groupDetail.save()
                 return JsonResponse(SUCCESS, status=HTTP_200)
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_200)
