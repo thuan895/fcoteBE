@@ -88,7 +88,6 @@ def postsignIn(request):
             }
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE_SIGN_IN, status=HTTP_401)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -246,7 +245,6 @@ def getProfile(request):
                 }
                 return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE_GET_PROFILE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -373,7 +371,6 @@ def getRanking(request):
                     profiles = profiles[3:]
                     profiles = paginate_data(
                         profiles, None, data["pageSize"], data["pageNumber"])
-                print(profiles)
                 for i in range(0, len(profiles)):
 
                     if profiles[i].organization == None:
@@ -462,7 +459,6 @@ def getRanking(request):
                 }
             return JsonResponse(dataResponse, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

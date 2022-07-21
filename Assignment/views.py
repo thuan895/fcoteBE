@@ -290,7 +290,6 @@ def addAssignment(request):
                 ##########################
             return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

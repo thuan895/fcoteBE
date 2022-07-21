@@ -53,11 +53,9 @@ def runAssignment(request):
                             "language": language.code
 
                         }
-                        print(input)
                         result = requests.post(
                             url,  data=json.dumps(payload), headers=header)
                         resultRun = json.loads(result.content)
-                        print(resultRun)
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])
@@ -79,7 +77,6 @@ def runAssignment(request):
             }
             return JsonResponse(responseDate, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -122,11 +119,9 @@ def submitAssignment(request):
                             "language": language.code
 
                         }
-                        print(input)
                         result = requests.post(
                             url,  data=json.dumps(payload), headers=header)
                         resultRun = json.loads(result.content)
-                        print(resultRun)
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])
@@ -172,7 +167,6 @@ def submitAssignment(request):
                 groupMember = GroupMember.objects.filter(
                     account=account, group=challengeElement[0].challenge.group)[0]
                 if submit.exists():
-                    print(submit[0])
                     accountSubmit = Submit.objects.get(id=submit[0].id)
                     lastScore = submit[0].highest_score
                     if submit[0].highest_score < score:
@@ -228,7 +222,6 @@ def submitAssignment(request):
             else:
                 return JsonResponse(NOT_FOUND_CHALLENGE_ELEMENT, status=HTTP_400)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

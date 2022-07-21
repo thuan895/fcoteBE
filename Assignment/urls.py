@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from Submit.views import *
 
 urlpatterns = [
     path('get-assignment-tag', getAssignmentTag),
@@ -9,5 +10,6 @@ urlpatterns = [
     path('get-assignment-detail', getAssignmentDetail),
     path('add-assignment', addAssignment),
     path('delete-assignment', deleteAssignment),
-
+    path('submit', submitAssignment),
+    path('run', runAssignment),
 ]

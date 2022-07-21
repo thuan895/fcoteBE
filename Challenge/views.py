@@ -104,7 +104,6 @@ def getListChallenge(request):
             responseData["currentSize"] = len(challenges)
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -214,7 +213,6 @@ def getDetailChallenge(request):
             else:
                 return JsonResponse(NOT_FOUND_CHALLENGE, status=HTTP_400)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -244,7 +242,7 @@ def createChallenge(request):
                 chlg.start_at = data["startAt"]
                 chlg.end_at = data["endAt"]
                 chlg.save()
-                
+
                 for asm in data["element"]:
                     asmObj = Assignment.objects.filter(id=asm["assignmentId"])
                     if asmObj.exists():
@@ -258,7 +256,6 @@ def createChallenge(request):
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
