@@ -1,3 +1,4 @@
+from calendar import c
 from datetime import datetime, timedelta
 from tokenize import group
 from urllib import response
@@ -77,6 +78,21 @@ def getListChallenge(request):
                 keyword = data["searchBy"]
                 challenges = challenges.filter(
                     Q(title__icontains=keyword) | Q(description__icontains=keyword))
+            if "status" in data:
+                dataAfterStatus = []
+                if data["status"] == challengeStatus.NotOpenYet:
+                    for challenge in challenges:
+                        if now < challenge.dateStart():
+                            dataAfterStatus.append(challenge)
+                elif data["status"] == challengeStatus.Open:
+                    for challenge in challenges:
+                        if now >= challenge.dateStart() and now <= challenge.dateEnd():
+                            dataAfterStatus.append(challenge)
+                elif data["status"] == challengeStatus.Close:
+                    for challenge in challenges:
+                        if now > challenge.dateEnd():
+                            dataAfterStatus.append(challenge)
+                challenges = dataAfterStatus
             if ("pageSize" in data) and ("pageNumber" in data):
                 challenges = paginate_data(
                     challenges, None, data["pageSize"], data["pageNumber"])

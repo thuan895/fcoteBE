@@ -12,6 +12,7 @@ class ListChallengeSerializer(serializers.Serializer):
     pageSize = serializers.IntegerField(required=False,)
     pageNumber = serializers.IntegerField(required=False,)
     username = serializers.CharField(required=False, max_length=255)
+    status = serializers.IntegerField(required=False,)
 
 
 class ChallengesSerializer(serializers.Serializer):
@@ -36,6 +37,7 @@ class ChallengeCreateSerializer(serializers.Serializer):
     startAt = serializers.CharField(required=False, max_length=255)
     endAt = serializers.CharField(required=False, max_length=255)
     element = ChallengeElementSerializer(required=False, many=True)
+
 
 class ChallengeDeleteSerializer(serializers.Serializer):
     challengeId = serializers.IntegerField(required=True,)
