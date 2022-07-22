@@ -196,12 +196,15 @@ def getAssignmentDetail(request):
                         input = []
                         output = {}
                         for elm in testCaseElements:
+                            variableName = parammeters[list(
+                                testCaseElements).index(elm)].name
                             if elm.type == InOutType.input:
                                 elmData = {"id": elm.id,
                                            "testCase": elm.test_case.id,
                                            "order": elm.order,
                                            "type": elm.type,
                                            "dataType": elm.data_type,
+                                           "name": variableName,
                                            "value": elm.value}
                                 input.append(elmData)
                             else:
@@ -210,6 +213,7 @@ def getAssignmentDetail(request):
                                           "order": elm.order,
                                           "type": elm.type,
                                           "dataType": elm.data_type,
+                                          "name": variableName,
                                           "value": elm.value}
                         testCase = {"id": testCase.id,
                                     "assignment": testCase.assignment.id,
@@ -223,6 +227,7 @@ def getAssignmentDetail(request):
             else:
                 return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
