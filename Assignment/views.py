@@ -145,7 +145,7 @@ def getAssignmentDetail(request):
                     assignment=assignment[0])
                 assignmentLanguagesResponse = []
                 for asmlg in assignmentLanguages:
-                    asmlgResponse = {"id": asmlg.id,
+                    asmlgResponse = {"id": asmlg.language.id,
                                      "language": asmlg.language.title,
                                      "timeLimit": asmlg.time_limit}
                     assignmentLanguagesResponse.append(asmlgResponse)

@@ -76,7 +76,7 @@ def detailGroup(request):
                     "title": group[0].title,
                     "joinCode": group[0].join_code,
                     "totalMember": group[0].total_member,
-
+                    "isOwner":  group[0].created_by == account,
                 }
                 groupMember = GroupMember.objects.filter(group=group[0])
                 if groupMember.exists():
@@ -200,6 +200,89 @@ def joinGroup(request):
                 return JsonResponse(SUCCESS, status=HTTP_200)
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['POST'])
+def joinGroup(request):
+    requestData = JoinGroupSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            group = Group.objects.filter(join_code=data["joinCode"])
+
+            if group.exists():
+                mb = GroupMember.objects.filter(
+                    group=group[0], account=account)
+                if mb.exists():
+                    return JsonResponse(JOINED_GROUP, status=HTTP_400)
+                grpMb = GroupMember()
+                grpMb.group = group[0]
+                grpMb.account = account
+                grpMb.save()
+                groupDetail = Group.objects.get(id=group[0].id)
+                groupDetail.total_member = group[0].total_member + 1
+                groupDetail.save()
+                return JsonResponse(SUCCESS, status=HTTP_200)
+            else:
+                return JsonResponse(NOT_FOUND_GROUP, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+
+@api_view(['POST'])
+def outMember(request):
+    requestData = outMemberSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            group = Group.objects.filter(id=data["groupId"])
+            if group.exists():
+                member = GroupMember.objects.filter(
+                    group=group[0], account=account)
+                member.delete()
+            else:
+                return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
+            return JsonResponse(SUCCESS, status=HTTP_200)
+        except Exception as e:
+            return JsonResponse(FAILURE, status=HTTP_400)
+    else:
+        return JsonResponse(INVALID_INPUT, status=HTTP_400)
+
+@api_view(['POST'])
+def outMember(request):
+    requestData = outMemberSerializer(data=request.data)
+    if requestData.is_valid():
+        account = validate_account(request)
+        if (account == None):
+            return JsonResponse(INVALID_TOKEN, status=HTTP_401)
+        if (account.is_active == False):
+            return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
+        try:
+            data = request.data
+            group = Group.objects.filter(id=data["groupId"])
+            if group.exists():
+                member = GroupMember.objects.filter(
+                    group=group[0], account=account)
+                member.delete()
+            else:
+                return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
+            return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
     else:

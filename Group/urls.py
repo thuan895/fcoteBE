@@ -7,4 +7,5 @@ urlpatterns = [
     path('create-group', createGroup),
     path('delete-group', deleteGroup),
     path('join-group', joinGroup),
+    path('out-member', outMember)
 ]
