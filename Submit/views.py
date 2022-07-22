@@ -53,11 +53,11 @@ def runAssignment(request):
                             "language": language.code
 
                         }
-                        # result = requests.post(
-                        #     url,  data=json.dumps(payload), headers=header)
-                        # resultRun = json.loads(result.content)
-                        resultRun = {
-                            "data": {"output": "10\n"}, "success": True}
+                        result = requests.post(
+                            url,  data=json.dumps(payload), headers=header)
+                        resultRun = json.loads(result.content)
+                        # resultRun = {
+                        #     "data": {"output": "10\n"}, "success": True}
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])
@@ -121,11 +121,11 @@ def submitAssignment(request):
                             "language": language.code
 
                         }
-                        # result = requests.post(
-                        #     url,  data=json.dumps(payload), headers=header)
-                        # resultRun = json.loads(result.content)
-                        resultRun = {
-                            "data": {"output": "10\n"}, "success": True}
+                        result = requests.post(
+                            url,  data=json.dumps(payload), headers=header)
+                        resultRun = json.loads(result.content)
+                        # resultRun = {
+                        #     "data": {"output": "10\n"}, "success": True}
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])

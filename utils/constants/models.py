@@ -72,3 +72,8 @@ class assignmentStatus():
     SOLVED = 1
     NOT_SOLVED = 2
     IN_PROGRESS = 3
+
+
+class RunOnServerType():
+    NotRun = 1
+    Solo = 2

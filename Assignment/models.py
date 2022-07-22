@@ -2,7 +2,7 @@
 from django.db import models
 from django.db.models.fields import CharField, DateTimeField, TextField, BooleanField, IntegerField
 from django.db.models.fields.related import ForeignKey
-from utils.constants.models import DataType,  Difficulty, InOutType
+from utils.constants.models import DataType,  Difficulty, InOutType, RunOnServerType
 from Account.models import Account
 
 
@@ -106,3 +106,9 @@ class TestCaseElement(models.Model):
 
     def __str__(self):
         return str(self.test_case.id)+"."+str(self.type) + "."+str(self.order) + "."+self.value
+
+
+# class ServerRun(models.Model):
+#     server = IntegerField(
+#         blank=True, null=True, choices=RunOnServerType.choices)
+#     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
