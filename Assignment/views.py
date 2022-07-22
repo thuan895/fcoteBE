@@ -151,7 +151,7 @@ def getAssignmentDetail(request):
                     assignmentLanguagesResponse.append(asmlgResponse)
                 responseData["languages"] = assignmentLanguagesResponse
                 parammeters = Parammeter.objects.filter(
-                    assignment=assignment[0])
+                    assignment=assignment[0]).order_by("id")
                 parammetersResponse = []
                 input = []
                 output = {}
@@ -227,7 +227,6 @@ def getAssignmentDetail(request):
             else:
                 return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
