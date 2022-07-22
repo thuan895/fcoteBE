@@ -74,6 +74,7 @@ class assignmentStatus():
     IN_PROGRESS = 3
 
 
-class RunOnServerType():
-    NotRun = 1
+class RunOnServerType(models.IntegerChoices):
+    Not_Run = 1
     Solo = 2
+    

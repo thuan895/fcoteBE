@@ -108,7 +108,7 @@ class TestCaseElement(models.Model):
         return str(self.test_case.id)+"."+str(self.type) + "."+str(self.order) + "."+self.value
 
 
-# class ServerRun(models.Model):
-#     server = IntegerField(
-#         blank=True, null=True, choices=RunOnServerType.choices)
-#     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
+class ServerRun(models.Model):
+    server = IntegerField(
+        blank=True, null=True, choices=RunOnServerType.choices)
+    updated_at = DateTimeField(auto_now=True, blank=True, null=True)

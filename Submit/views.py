@@ -5,7 +5,7 @@ from tokenize import group
 from django.http import JsonResponse
 import requests
 from Account.models import Profile
-from Assignment.models import Assignment, Language, TestCase, TestCaseElement
+from Assignment.models import Assignment, Language, ServerRun, TestCase, TestCaseElement
 from Challenge.models import ChallengeElement
 from Group.models import GroupMember
 from Submit.models import Submit
@@ -13,7 +13,7 @@ from Submit.serializers import SourceCodeSerializer
 from utils.api.api import validate_account
 from utils.api.http_status import HTTP_200, HTTP_400, HTTP_401
 from rest_framework.decorators import api_view
-from utils.constants.models import Difficulty, InOutType
+from utils.constants.models import Difficulty, InOutType, RunOnServerType
 from utils.response.common import *
 from utils.response.submit import NOT_FOUND_CHALLENGE_ELEMENT
 
@@ -29,6 +29,7 @@ def runAssignment(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
+            runOn = ServerRun.objects.get(id=1).server
             assignment = Assignment.objects.filter(id=data["assignmentId"])
             if assignment.exists():
                 testCases = TestCase.objects.filter(
@@ -53,11 +54,13 @@ def runAssignment(request):
                             "language": language.code
 
                         }
-                        result = requests.post(
-                            url,  data=json.dumps(payload), headers=header)
-                        resultRun = json.loads(result.content)
-                        # resultRun = {
-                        #     "data": {"output": "10\n"}, "success": True}
+                        if runOn == RunOnServerType.Not_Run:
+                            resultRun = {
+                                "data": {"output": "10\n"}, "success": True}
+                        elif runOn == RunOnServerType.Solo:
+                            result = requests.post(
+                                url,  data=json.dumps(payload), headers=header)
+                            resultRun = json.loads(result.content)
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])
@@ -79,6 +82,7 @@ def runAssignment(request):
             }
             return JsonResponse(responseDate, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -95,6 +99,8 @@ def submitAssignment(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
+            runOn = ServerRun.objects.get(id=1).server
+
             assignment = Assignment.objects.filter(id=data["assignmentId"])
             if assignment.exists():
                 testCases = TestCase.objects.filter(
@@ -121,11 +127,14 @@ def submitAssignment(request):
                             "language": language.code
 
                         }
-                        result = requests.post(
-                            url,  data=json.dumps(payload), headers=header)
-                        resultRun = json.loads(result.content)
-                        # resultRun = {
-                        #     "data": {"output": "10\n"}, "success": True}
+                        if (runOn == RunOnServerType.Not_Run):
+                            resultRun = {
+                                "data": {"output": "10\n"}, "success": True}
+                        if (runOn == RunOnServerType.Solo):
+                            result = requests.post(
+                                url,  data=json.dumps(payload), headers=header)
+                            resultRun = json.loads(result.content)
+
                         outputExpec = str(elements.filter(
                             type=InOutType.output)[0].value)
                         outputAct = str(resultRun["data"]["output"])

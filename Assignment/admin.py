@@ -35,6 +35,6 @@ class AssignmentAdmin(admin.ModelAdmin):
 admin.site.register(Language)
 admin.site.register(Assignment, AssignmentAdmin)
 # admin.site.register(AssignmentLanguage)
-# admin.site.register(ServerRun)
+admin.site.register(ServerRun)
 admin.site.register(TestCase, TestCaseAdmin)
 admin.site.register(TestCaseElement)
