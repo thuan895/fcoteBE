@@ -133,7 +133,7 @@ def getAssignmentDetail(request):
                     # "sample": assignment[0].sample,
                     # "image": assignment[0].image,
                     "difficulty": assignment[0].difficulty,
-                    "total_testCase": assignment[0].total_test_case,
+                    "totalTestCase": assignment[0].total_test_case,
                     "score": assignment[0].score,
                     # "assignment_tag": assignment[0].assignment_tag.id,
                     "characterLimit": assignment[0].character_limit,
@@ -153,15 +153,30 @@ def getAssignmentDetail(request):
                 parammeters = Parammeter.objects.filter(
                     assignment=assignment[0])
                 parammetersResponse = []
+                input=[]
+                output={}
                 for prm in parammeters:
-                    prmResponse = {"id": prm.id,
+                    if prm.type == InOutType.input:
+                        prmResponse = {"id": prm.id,
                                    "assignment": prm.assignment.id,
                                    "order": prm.order,
                                    "type": prm.type,
                                    "name": prm.name,
                                    "dataType": prm.data_type,
                                    "description": prm.description}
-                    parammetersResponse.append(prmResponse)
+                        input.append(prmResponse)
+                    else:
+                        output = {"id": prm.id,
+                                   "assignment": prm.assignment.id,
+                                   "order": prm.order,
+                                   "type": prm.type,
+                                   "name": prm.name,
+                                   "dataType": prm.data_type,
+                                   "description": prm.description}
+                parammetersResponse = {
+                    "input":input,
+                    "output":output,
+                }                                   
                 responseData["parameters"] = parammetersResponse
                 testCases = TestCase.objects.filter(assignment=assignment[0])
                 testCasesResponse = []
@@ -176,19 +191,30 @@ def getAssignmentDetail(request):
                     else:
                         testCaseElements = TestCaseElement.objects.filter(
                             test_case=testCase)
-                        testCaseElmList = []
+                        testCaseElmList = {}
+                        input = []
+                        output = {}
                         for elm in testCaseElements:
-                            elmData = {"id": elm.id,
-                                       "testCase": elm.test_case.id,
-                                       "order": elm.order,
-                                       "type": elm.type,
-                                       "dataType": elm.data_type,
-                                       "value": elm.value}
-                            testCaseElmList.append(elmData)
+                            if elm.type == InOutType.input:
+                                elmData = {"id": elm.id,
+                                           "testCase": elm.test_case.id,
+                                           "order": elm.order,
+                                           "type": elm.type,
+                                           "dataType": elm.data_type,
+                                           "value": elm.value}
+                                input.append(elmData)
+                            else:
+                                output = {"id": elm.id,
+                                          "testCase": elm.test_case.id,
+                                          "order": elm.order,
+                                          "type": elm.type,
+                                          "dataType": elm.data_type,
+                                          "value": elm.value}
                         testCase = {"id": testCase.id,
                                     "assignment": testCase.assignment.id,
                                     "order": testCase.order,
-                                    "element": testCaseElmList,
+                                    "input": input,
+                                    "output": output,
                                     "isPrivate": testCase.is_private}
                         testCasesResponse.append(testCase)
                 responseData["testCases"] = testCasesResponse
