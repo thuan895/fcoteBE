@@ -379,11 +379,14 @@ def deleteAssignment(request):
             data = request.data
             assignment = Assignment.objects.filter(id=data["assignmentId"])
             if assignment.exists():
-                assignment.delete()
+                assignment = assignment[0]
+                if assignment.created_by == account:
+                    assignment.delete()
+                    return JsonResponse(SUCCESS, status=HTTP_200)
+                else:
+                    return JsonResponse(NOT_OWNER_ASSIGNMENT, status=HTTP_400)
             else:
                 return JsonResponse(NOT_FOUND_ASSIGNMENT, status=HTTP_400)
-
-            return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
     else:

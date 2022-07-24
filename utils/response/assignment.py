@@ -18,3 +18,7 @@ NOT_FOUND_ASSIGNMENT = {
     'errorMessageEn': 'Not found assignment with this id',
     'errorMessageVi': 'Không tìm thấy bài tập với id này',
 }
+NOT_OWNER_ASSIGNMENT = {
+    'errorMessageEn': 'You are not owner assignment',
+    'errorMessageVi': 'Bạn không phải người tạo bài tập',
+}

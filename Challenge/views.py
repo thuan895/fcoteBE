@@ -290,11 +290,14 @@ def deleteChallenge(request):
             data = request.data
             challenge = Challenge.objects.filter(id=data["challengeId"])
             if challenge.exists():
-                challenge.delete()
+                challenge = challenge[0]
+                if challenge.created_by == account:
+                    challenge.delete()
+                    return JsonResponse(SUCCESS, status=HTTP_200)
+                else:
+                    return JsonResponse(NOT_OWNER_CHALLENGE, status=HTTP_400)
             else:
                 return JsonResponse(NOT_FOUND_CHALLENGE, status=HTTP_400)
-
-            return JsonResponse(SUCCESS, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
     else:

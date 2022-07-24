@@ -32,3 +32,14 @@ class JoinGroupSerializer(serializers.Serializer):
 
 class outMemberSerializer(serializers.Serializer):
     groupId = serializers.IntegerField(required=True)
+
+class kickMemberSerializer(serializers.Serializer):
+    groupId = serializers.IntegerField(required=True)
+    memberId = serializers.IntegerField(required=True)
+
+class UpdateGroupSerializer(serializers.Serializer):
+    groupId = serializers.IntegerField(required=True)
+    title = serializers.CharField(
+        required=False, max_length=255, allow_blank=True)
+    description = serializers.CharField(
+        required=False, max_length=10000, allow_blank=True)

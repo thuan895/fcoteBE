@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from django.http.response import JsonResponse
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
+from Group.models import Group, GroupMember
 
 from utils.constants.firebase import FirebaseConfig, downloadImage, uploadFile
 from utils.constants.models import ProfileContent, RankingType
@@ -40,6 +41,14 @@ def postsignUp(request):
             profile = Profile()
             profile.account = account
             profile.save()
+            group = Group.objects.filter(id=1)
+            grpMb = GroupMember()
+            grpMb.group = group[0]
+            grpMb.account = account
+            grpMb.save()
+            groupDetail = Group.objects.get(id=1)
+            groupDetail.total_member = group[0].total_member + 1
+            groupDetail.save()
             return JsonResponse(SUCCESS, status=HTTP_200)
         except HTTPError as e:
             if (e.strerror.find('EMAIL_EXISTS') != -1):
