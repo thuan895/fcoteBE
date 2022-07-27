@@ -36,9 +36,8 @@ def getListChallenge(request):
             ######### Handle #########
             now = (datetime.now()-timedelta(hours=7)
                    ).strftime("%Y-%m-%d %H:%M:%S")
-            challenges = Challenge.objects.filter(
-                is_active=True).order_by("-id")
-
+            challenges = Challenge.objects.filter(~Q(id=1),
+                                                  is_active=True).order_by("-id")
             if data["typeData"] == ChallengeTypeContent.Public:
                 groupPublic = Group.objects.filter(id=1)
                 challenges = challenges.filter(
@@ -92,6 +91,9 @@ def getListChallenge(request):
                     for challenge in challenges:
                         if now > challenge.dateEnd():
                             dataAfterStatus.append(challenge)
+                elif data["status"] == challengeStatus.All:
+                    for challenge in challenges:
+                        dataAfterStatus.append(challenge)
                 challenges = dataAfterStatus
             if ("pageSize" in data) and ("pageNumber" in data):
                 challenges = paginate_data(

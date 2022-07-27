@@ -51,9 +51,9 @@ class UpdateProfileSerializer(serializers.Serializer):
         required=False, max_length=255, allow_blank=True)
     country = serializers.CharField(
         required=False, max_length=255, allow_blank=True)
-    first_name = serializers.CharField(
+    firstName = serializers.CharField(
         required=False, max_length=255, allow_blank=True)
-    last_name = serializers.CharField(
+    lastName = serializers.CharField(
         required=False, max_length=255, allow_blank=True)
 
 

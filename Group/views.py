@@ -25,7 +25,9 @@ def getListGroup(request):
             return JsonResponse(INACTIVE_ACCOUNT, status=HTTP_400)
         try:
             data = request.data
-            groupMember = GroupMember.objects.filter(account=account)
+            groupGlobal = Group.objects.get(id=1)
+            groupMember = GroupMember.objects.filter(
+                ~Q(group=groupGlobal), account=account)
             if groupMember.exists():
                 if ("pageSize" in data) and ("pageNumber" in data):
                     groupMember = paginate_data(
@@ -45,7 +47,7 @@ def getListGroup(request):
 
                 responseData = {
                     "groups": listGrp,
-                    "currentSize": len(groupMember)
+                    "currentSize": len(listGrp)
                 }
                 return JsonResponse(responseData, status=HTTP_200)
 
@@ -202,7 +204,7 @@ def joinGroup(request):
                 groupDetail.save()
                 return JsonResponse(SUCCESS, status=HTTP_200)
             else:
-                return JsonResponse(NOT_FOUND_GROUP, status=HTTP_200)
+                return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
         except Exception as e:
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
@@ -225,6 +227,10 @@ def outMember(request):
                 member = GroupMember.objects.filter(
                     group=group[0], account=account)
                 member.delete()
+                groupSelected = group[0]
+                sl = group[0].total_member
+                groupSelected.total_member = sl - 1
+                groupSelected.save()
                 return JsonResponse(SUCCESS, status=HTTP_200)
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
@@ -254,6 +260,10 @@ def kickMember(request):
                         groupMember = GroupMember.objects.filter(
                             group=group, account=member[0])
                         groupMember.delete()
+                        groupSelected = group
+                        sl = group.total_member
+                        groupSelected.total_member = sl - 1
+                        groupSelected.save()
                         return JsonResponse(SUCCESS, status=HTTP_200)
                     else:
                         return JsonResponse(NOT_GROUP_MEMBER, status=HTTP_400)

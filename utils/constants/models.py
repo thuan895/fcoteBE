@@ -62,6 +62,7 @@ class ChallengeTypeContent():
 
 
 class challengeStatus():
+    All = 0
     NotOpenYet = 1
     Open = 2
     Close = 3
@@ -77,4 +78,3 @@ class assignmentStatus():
 class RunOnServerType(models.IntegerChoices):
     Not_Run = 1
     Solo = 2
-    

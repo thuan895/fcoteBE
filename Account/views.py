@@ -331,10 +331,10 @@ def updateProfile(request):
                 profile.city = data["city"]
             if "country" in data:
                 profile.country = data["country"]
-            if "first_name" in data:
-                account.first_name = data["first_name"]
-            if "last_name" in data:
-                account.last_name = data["last_name"]
+            if "firstName" in data:
+                account.first_name = data["firstName"]
+            if "lastName" in data:
+                account.last_name = data["lastName"]
             profile.save()
             account.save()
             return JsonResponse(SUCCESS, status=HTTP_200)

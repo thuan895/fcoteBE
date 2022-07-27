@@ -222,7 +222,10 @@ def submitAssignment(request):
                     groupMember.save()
                     org.save()
                     profile.save()
-
+                    currentAssignment = Assignment.objects.filter(
+                        id=data["assignmentId"])[0]
+                    currentAssignment.total_participant = assignment[0].total_participant+1
+                    currentAssignment.save()
                 summarizeRespone = {
                     "score": score,
                     "passAll": failure == 0
