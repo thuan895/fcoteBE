@@ -155,25 +155,32 @@ def getDetailChallenge(request):
                 else:
                     status = challengeStatus.Close
                 responseChallenge = {
-                    "challenge": {
-                        "title": challenge[0].title,
-                        "description": challenge[0].description,
-                        "createdBy": challenge[0].created_by.username,
-                        "image": challenge[0].image,
-                        "group": challenge[0].group.title,
-                        "groupId": challenge[0].group.id,
-                        "totalAssignment": challenge[0].total_assignment,
-                        "startAt": challenge[0].dateStart(),
-                        "endAt": challenge[0].dateEnd(),
-                        "status": status,
-                    }
+                    "title": challenge[0].title,
+                    "description": challenge[0].description,
+                    "createdBy": challenge[0].created_by.username,
+                    "image": challenge[0].image,
+                    "group": challenge[0].group.title,
+                    "groupId": challenge[0].group.id,
+                    "totalAssignment": challenge[0].total_assignment,
+                    "startAt": challenge[0].dateStart(),
+                    "endAt": challenge[0].dateEnd(),
+                    "status": status,
+
                 }
+                asmList = []
+                ii = 0
                 for elm in challenge_Elms:
                     submited = Submit.objects.filter(challenge_element=elm)
                     if submited.exists():
                         for submit in submited:
                             if submit.account not in accountSubmit:
                                 accountSubmit.append(submit.account)
+                    ii += 1
+                    asmInfo = {
+                        "order": ii,
+                        "assignmentId": elm.assignment.id
+                    }
+                    asmList.append(asmInfo)
                 for account in accountSubmit:
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
@@ -187,12 +194,11 @@ def getDetailChallenge(request):
                         }
                     else:
                         responseAccount = {
-                            "user": {
-                                "username": account.username,
-                                "city": "-",
-                                "avatar": "-",
-                                "organization": "-",
-                            }
+                            "username": account.username,
+                            "city": "-",
+                            "avatar": "-",
+                            "organization": "-",
+
                         }
                     submitAsm = []
                     for chlg_Elm in challenge_Elms:
@@ -207,6 +213,7 @@ def getDetailChallenge(request):
                             durationTime = time.strftime(
                                 '%H:%M:%S', time.gmtime(result))
                             sbmAsm = {
+                                "assignmentId": chlg_Elm.assignment.id,
                                 "highestScore": submit[0].highest_score,
                                 "shortestRuntime": submit[0].shortest_runtime,
                                 "counter": submit[0].counter,
@@ -215,18 +222,20 @@ def getDetailChallenge(request):
                             submitAsm.append(sbmAsm)
                         else:
                             sbmAsm = {
+                                "assignmentId": chlg_Elm.assignment.id,
                                 "highestScore": "-",
                                 "shortestRuntime": "-",
                                 "counter": "-",
                                 "time": "-",
                             }
                             submitAsm.append(sbmAsm)
-                    accountSubmitR = {"user": responseAccount,
-                                      "submitAssignment": submitAsm}
+                    accountSubmitR = {"userInfo": responseAccount,
+                                      "assignmentResults": submitAsm}
                     listSubmit.append(accountSubmitR)
                 responseData = {}
-                responseData["ChallengeDetail"] = responseChallenge
-                responseData["challengeSubmit"] = listSubmit
+                responseData["detail"] = responseChallenge
+                responseData["assignmentList"] = asmList
+                responseData["submits"] = listSubmit
                 return JsonResponse(responseData, status=HTTP_200)
             else:
                 return JsonResponse(NOT_FOUND_CHALLENGE, status=HTTP_400)

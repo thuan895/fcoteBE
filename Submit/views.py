@@ -82,7 +82,6 @@ def runAssignment(request):
             }
             return JsonResponse(responseDate, status=HTTP_200)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)

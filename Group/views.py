@@ -272,7 +272,6 @@ def kickMember(request):
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
         except Exception as e:
-            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
