@@ -5,6 +5,7 @@ from Assignment.serializers import *
 from Challenge.models import Challenge, ChallengeElement
 from utils.api.api import paginate_data, validate_account
 from utils.api.http_status import *
+from utils.constants.models import TRENDING
 from utils.response.assignment import *
 from utils.response.common import *
 from .models import *
@@ -82,8 +83,11 @@ def getListAssignment(request):
                     assignments = assignments.filter(difficulty=3)
             if "searchBy" in data:
                 keyword = data["searchBy"]
-                assignments = assignments.filter(
-                    Q(title__icontains=keyword) | Q(description__icontains=keyword))
+                if keyword != TRENDING:
+                    assignments = assignments.filter(
+                        Q(title__icontains=keyword) | Q(description__icontains=keyword))
+                else:
+                    assignments = assignments.order_by("-total_participant")
             if ("pageSize" in data) and ("pageNumber" in data):
                 assignments = paginate_data(
                     assignments, None, data["pageSize"], data["pageNumber"])

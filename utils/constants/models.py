@@ -59,6 +59,7 @@ class ChallengeTypeContent():
     Group = 2
     Owner = 3
     Completed = 4
+    Trending = 5
 
 
 class challengeStatus():
@@ -78,3 +79,5 @@ class assignmentStatus():
 class RunOnServerType(models.IntegerChoices):
     Not_Run = 1
     Solo = 2
+
+TRENDING = "trending"

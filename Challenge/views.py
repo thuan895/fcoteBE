@@ -1,4 +1,5 @@
 from calendar import c
+from collections import Counter
 from datetime import datetime, timedelta
 from tokenize import group
 from urllib import response
@@ -71,6 +72,25 @@ def getListChallenge(request):
                     challenges = completedChallengeId
                 else:
                     return JsonResponse(NOT_FOUND_USER_FILTER, status=HTTP_400)
+            elif data["typeData"] == ChallengeTypeContent.Trending:
+                challenges = []
+                submits = Submit.objects.all()
+                submitCodes = []
+                for submit in submits:
+                    if submit.challenge_element.challenge.id != 1:
+                        submitCode = str(submit.account.id) + "|" + \
+                            str(submit.challenge_element.challenge.id)
+                        submitCodes.append(submitCode)
+                submitChallenges = [*set(submitCodes)]
+                submitChllg = []
+                for sbmChll in submitChallenges:
+                    submitChllg.append(sbmChll.split('|')[1])
+                submitChallengeCounter = Counter(submitChllg)
+                submitChallengeCounter.most_common()
+                challengeList = []
+                for chllg in submitChallengeCounter.keys():
+                    challengeList.append(int(chllg))
+                challenges = Challenge.objects.filter(id__in=challengeList)
             else:
                 return JsonResponse(FAILURE, status=HTTP_400)
             if "searchBy" in data:
@@ -122,6 +142,7 @@ def getListChallenge(request):
             responseData["currentSize"] = len(challenges)
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -185,12 +206,10 @@ def getDetailChallenge(request):
                     profile = Profile.objects.filter(account=account)
                     if profile.exists():
                         responseAccount = {
-                            "user": {
-                                "username": account.username,
-                                "city": profile[0].city,
-                                "avatar": profile[0].avatar,
-                                "organization": profile[0].organization.title,
-                            }
+                            "username": account.username,
+                            "city": profile[0].city,
+                            "avatar": profile[0].avatar,
+                            "organization": profile[0].organization.title,
                         }
                     else:
                         responseAccount = {
