@@ -13,6 +13,7 @@ class ListAssignmentSerializer(serializers.Serializer):
         required=False, max_length=255, allow_blank=True)
     pageSize = serializers.IntegerField(required=False)
     pageNumber = serializers.IntegerField(required=False)
+    filterByTop = serializers.BooleanField(required=False)
 
 
 class AssignmentSerializer(serializers.ModelSerializer):

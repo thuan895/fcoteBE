@@ -83,10 +83,10 @@ def getListAssignment(request):
                     assignments = assignments.filter(difficulty=3)
             if "searchBy" in data:
                 keyword = data["searchBy"]
-                if keyword != TRENDING:
-                    assignments = assignments.filter(
-                        Q(title__icontains=keyword) | Q(description__icontains=keyword))
-                else:
+                assignments = assignments.filter(
+                    Q(title__icontains=keyword) | Q(description__icontains=keyword))
+            if "filterByTop" in data:
+                if data["filterByTop"]:
                     assignments = assignments.order_by("-total_participant")
             if ("pageSize" in data) and ("pageNumber" in data):
                 assignments = paginate_data(
