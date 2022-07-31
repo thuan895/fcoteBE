@@ -88,6 +88,7 @@ def getListAssignment(request):
             if "filterByTop" in data:
                 if data["filterByTop"]:
                     assignments = assignments.order_by("-total_participant")
+            totalAssignment = len(assignments)
             if ("pageSize" in data) and ("pageNumber" in data):
                 assignments = paginate_data(
                     assignments, None, data["pageSize"], data["pageNumber"])
@@ -107,7 +108,7 @@ def getListAssignment(request):
                 }
                 listData.append(assignmentData)
             responseData["assignments"] = listData
-            responseData["currentSize"] = len(assignments)
+            responseData["totalAssignment"] = totalAssignment
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
             return JsonResponse(FAILURE_GET_ASSIGNMENT, status=HTTP_400)
@@ -279,7 +280,7 @@ def addAssignment(request):
                         obj.assignment = assignment
                         obj.language = language[0]
                         obj.time_limit = lgg["timeLimit"]
-                obj.save()
+                    obj.save()
                 ##########################
                 for input in data["inputOutput"]["input"]:
                     obj = Parammeter()

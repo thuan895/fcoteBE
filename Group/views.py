@@ -223,7 +223,7 @@ def outMember(request):
         try:
             data = request.data
             group = Group.objects.filter(id=data["groupId"])
-            if group.exists():
+            if group.exists() and group.created_by != account:
                 member = GroupMember.objects.filter(
                     group=group[0], account=account)
                 member.delete()
@@ -256,7 +256,7 @@ def kickMember(request):
                 group = group[0]
                 if group.created_by == account:
                     member = Account.objects.filter(id=data["memberId"])
-                    if member.exists():
+                    if member.exists() and member[0] != account:
                         groupMember = GroupMember.objects.filter(
                             group=group, account=member[0])
                         groupMember.delete()

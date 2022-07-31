@@ -1,4 +1,5 @@
 
+from datetime import date, datetime
 import json
 from sre_constants import FAILURE, SUCCESS
 from tokenize import group
@@ -174,29 +175,43 @@ def submitAssignment(request):
                 assignment=data["assignmentId"], challenge=data["challengeId"])
             if challengeElement.exists():
                 submit = Submit.objects.filter(
-                    account=account, challenge_element=challengeElement[0])
+                    account=account, challenge_element=challengeElement[0], )
                 profile = Profile.objects.filter(account=account)[0]
                 groupMember = GroupMember.objects.filter(
                     account=account, group=challengeElement[0].challenge.group)[0]
                 if submit.exists():
-                    accountSubmit = Submit.objects.get(id=submit[0].id)
-                    lastScore = submit[0].highest_score
-                    if submit[0].highest_score < score:
-                        accountSubmit.highest_score = score
-                        profile.total_score = profile.total_score - \
-                            lastScore + score
-                        profile.save()
-                        org = profile.organization
-                        org.total_score = org.total_score - \
-                            lastScore + score
-                        org.save()
-                        groupMember.total_score = groupMember.total_score - \
-                            lastScore + score
+                    submit = submit.filter(language=language)
+                    if submit.exists():
+                        accountSubmit = Submit.objects.get(id=submit[0].id)
+                        lastScore = submit[0].highest_score
+                        if submit[0].highest_score < score:
+                            accountSubmit.highest_score = score
+                            accountSubmit.completed_at = datetime.today()
+                            profile.total_score = profile.total_score - \
+                                lastScore + score
+                            profile.save()
+                            org = profile.organization
+                            org.total_score = org.total_score - \
+                                lastScore + score
+                            org.save()
+                            groupMember.total_score = groupMember.total_score - \
+                                lastScore + score
+                            groupMember.save()
+                        accountSubmit.source_code = data["sourceCode"]
+                        accountSubmit.counter = submit[0].counter+1
                         groupMember.save()
-                    accountSubmit.source_code = data["sourceCode"]
-                    accountSubmit.counter = submit[0].counter+1
-                    groupMember.save()
-                    accountSubmit.save()
+                        accountSubmit.save()
+                    else:
+                        lang = Language.objects.filter(id=data["language"])[0]
+                        submitObj = Submit()
+                        submitObj.account = account
+                        submitObj.challenge_element = challengeElement[0]
+                        submitObj.source_code = data["sourceCode"]
+                        submitObj.highest_score = score
+                        submitObj.language = lang
+                        submitObj.counter = 1
+                        submitObj.completed_at = datetime.today()
+                        submitObj.save()
                 else:
                     lang = Language.objects.filter(id=data["language"])[0]
                     submitObj = Submit()
@@ -206,6 +221,7 @@ def submitAssignment(request):
                     submitObj.highest_score = score
                     submitObj.language = lang
                     submitObj.counter = 1
+                    submitObj.completed_at = datetime.today()
                     submitObj.save()
                     profile.total_assigment = profile.total_assigment+1
                     if assignment[0].difficulty == Difficulty.Easy:

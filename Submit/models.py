@@ -19,6 +19,7 @@ class Submit(models.Model):
         Language, on_delete=models.CASCADE,  blank=True, null=True)
     counter = IntegerField(blank=True, null=True, default=0)
     is_share = BooleanField(default=False, blank=True, null=True)
+    completed_at = DateTimeField(blank=True, null=True)
     created_at = DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = DateTimeField(auto_now=True, blank=True, null=True)
 

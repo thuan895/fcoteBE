@@ -115,6 +115,7 @@ def getListChallenge(request):
                     for challenge in challenges:
                         dataAfterStatus.append(challenge)
                 challenges = dataAfterStatus
+            totalChallenge = len(challenges)
             if ("pageSize" in data) and ("pageNumber" in data):
                 challenges = paginate_data(
                     challenges, None, data["pageSize"], data["pageNumber"])
@@ -139,7 +140,7 @@ def getListChallenge(request):
                 }
                 challengeData.append(item)
             responseData["challenges"] = challengeData
-            responseData["currentSize"] = len(challenges)
+            responseData["totalChallenge"] = totalChallenge
             return JsonResponse(responseData, status=HTTP_200)
         except Exception as e:
             print(e)
