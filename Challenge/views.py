@@ -132,7 +132,7 @@ def getListChallenge(request):
                     "challengeId": i.id,
                     "image": i.image,
                     "title": i.title,
-                    "decription": i.description,
+                    "description": i.description,
                     "totalMember": "All",
                     "startAt": i.dateStart(),
                     "endAt": i.dateEnd(),
