@@ -86,8 +86,8 @@ def postsignIn(request):
             profile = Profile.objects.filter(account=account)
             dataUser = {
                 'userId': account.id,
-                'fullName': account.fullname(),
                 'username':account.username,
+                'fullName': account.fullname(),
                 'avatar': profile[0].avatar
             }
             responseData = {
