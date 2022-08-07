@@ -33,7 +33,7 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
       - name: Delete Old Artifacts
-        uses: actions/github-script@v6
+        uses: actions/checkout@v2
         id: artifact
         with:
           script: |
