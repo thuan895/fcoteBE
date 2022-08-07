@@ -33,7 +33,7 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
       - name: Delete Old Artifacts
-        uses: actions/checkout@v2
+        uses: actions/github-script@v6
         id: artifact
         with:
           script: |
@@ -43,6 +43,7 @@ jobs:
             })
 
             res.data.artifacts
+              .filter(({ name }) => name === 'python-app')
               .forEach(({ id }) => {
                 github.rest.actions.deleteArtifact({
                   owner: context.repo.owner,
