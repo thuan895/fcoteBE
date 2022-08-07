@@ -223,18 +223,23 @@ def outMember(request):
         try:
             data = request.data
             group = Group.objects.filter(id=data["groupId"])
-            if group.exists() and group.created_by != account:
-                member = GroupMember.objects.filter(
-                    group=group[0], account=account)
-                member.delete()
-                groupSelected = group[0]
-                sl = group[0].total_member
-                groupSelected.total_member = sl - 1
-                groupSelected.save()
-                return JsonResponse(SUCCESS, status=HTTP_200)
+
+            if group.exists():
+                if group[0].created_by != account:
+                    member = GroupMember.objects.filter(
+                        group=group[0], account=account)
+                    # member.delete()
+                    groupSelected = group[0]
+                    sl = group[0].total_member
+                    groupSelected.total_member = sl - 1
+                    groupSelected.save()
+                    return JsonResponse(SUCCESS, status=HTTP_200)
+                else:
+                    return JsonResponse(OWNER_NOT_OUT, status=HTTP_400)
             else:
                 return JsonResponse(NOT_FOUND_GROUP, status=HTTP_400)
         except Exception as e:
+            print(e)
             return JsonResponse(FAILURE, status=HTTP_400)
     else:
         return JsonResponse(INVALID_INPUT, status=HTTP_400)
@@ -256,15 +261,18 @@ def kickMember(request):
                 group = group[0]
                 if group.created_by == account:
                     member = Account.objects.filter(id=data["memberId"])
-                    if member.exists() and member[0] != account:
-                        groupMember = GroupMember.objects.filter(
-                            group=group, account=member[0])
-                        groupMember.delete()
-                        groupSelected = group
-                        sl = group.total_member
-                        groupSelected.total_member = sl - 1
-                        groupSelected.save()
-                        return JsonResponse(SUCCESS, status=HTTP_200)
+                    if member.exists():
+                        if member[0] != account:
+                            groupMember = GroupMember.objects.filter(
+                                group=group, account=member[0])
+                            groupMember.delete()
+                            groupSelected = group
+                            sl = group.total_member
+                            groupSelected.total_member = sl - 1
+                            groupSelected.save()
+                            return JsonResponse(SUCCESS, status=HTTP_200)
+                        else:
+                            return JsonResponse(OWNER_NOT_OUT, status=HTTP_400)
                     else:
                         return JsonResponse(NOT_GROUP_MEMBER, status=HTTP_400)
                 else:

@@ -16,3 +16,8 @@ NOT_GROUP_MEMBER = {
     'errorMessageEn': 'Member selected is not group member',
     'errorMessageVi': 'Thành viên không có trong nhóm',
 }
+
+OWNER_NOT_OUT = {
+    'errorMessageEn': 'The owner cannot leave the group',
+    'errorMessageVi': 'Chủ sở hửu không thể rời nhóm',
+}
